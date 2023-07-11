@@ -35,10 +35,6 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
         const setMatches = setFilter === 'All' || variant.details[0].set.some((set) => set.setNumber === setFilter);
         const abilityMatches = abilityFilter === 'All' || variant.details[0].abilities.some((ability) => ability.name === abilityFilter);
         const attributeMatches = attributeFilter === 'All' || variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter);
-        // const attributeMatches =
-        //     attributeFilter === 'All' ||
-        //     (variant.details[0].attributes &&
-        //         variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter));
 
       
         return colorMatches && setMatches && abilityMatches && attributeMatches;
