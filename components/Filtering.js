@@ -1,115 +1,133 @@
-import React from 'react'
-import Head from 'next/head'
-import {useState} from 'react'
+import React, { useState } from 'react';
 import _ from 'lodash';
-import Counter from '@/components/Counter'
-// import cardColors from '@/data/card_colors';
 
-export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) {
-    console.log(data)
-    
-    const [colorFilter, setColorFilter] = useState('All');
-    const [setFilter, setSetFilter] = useState('All');
-    const [abilityFilter, setAbilityFilter] = useState('All');
-    const [attributeFilter, setAttributeFilter] = useState('All');
-    const [typesFilter, setTypesFilter] = useState('All');
-    const [categoryFilter, setCategoryFilter] = useState('All');
-    const [nameFilter, setNameFilter] = useState('');
-    const [numberFilter, setNumberFilter] = useState('');
-    const [costFilter, setCostFilter] = useState('');
-    const [counterFilter, setCounterFilter] = useState('');
-    const [powerFilter, setPowerFilter] = useState('');
-    const [effectFilter, setEffectFilter] = useState('');
-    const [triggerFilter, setTriggerFilter] = useState('');
-    
-    const handleColorFilterChange = (e) => {
-      setColorFilter(e.target.value);
-    };
-    
-    const handleSetFilterChange = (e) => {
-      setSetFilter(e.target.value);
-    };
+const Filtering = ({ data, colorData, setData, abilityData, attributeData, typesData, categoryData }) => {
+  // Use the data prop in your component
+  // Example filtering code using the data prop
 
-    const handleAbilityFilterChange = (e) => {
-        setAbilityFilter(e.target.value);
-      };
+  const [colorFilter, setColorFilter] = useState('All');
+  const [setFilter, setSetFilter] = useState('All');
+  const [abilityFilter, setAbilityFilter] = useState('All');
+  const [attributeFilter, setAttributeFilter] = useState('All');
+  const [typesFilter, setTypesFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [nameFilter, setNameFilter] = useState('');
+  const [numberFilter, setNumberFilter] = useState('');
+  const [costFilter, setCostFilter] = useState('');
+  const [counterFilter, setCounterFilter] = useState('');
+  const [powerFilter, setPowerFilter] = useState('');
+  const [effectFilter, setEffectFilter] = useState('');
+  const [triggerFilter, setTriggerFilter] = useState('');
 
-    const handleAttributeFilterChange = (e) => {
+  const handleColorFilterChange = (e) => {
+    setColorFilter(e.target.value);
+  };
+
+  const handleSetFilterChange = (e) => {
+    setSetFilter(e.target.value);
+  };
+
+  const handleAbilityFilterChange = (e) => {
+    setAbilityFilter(e.target.value);
+  };
+
+  const handleAttributeFilterChange = (e) => {
     setAttributeFilter(e.target.value);
-    };
-    
-    const handleTypesFilterChange = (e) => {
-        setTypesFilter(e.target.value);
-    };
+  };
 
-    const handleCategoryFilterChange = (e) => {
-        setCategoryFilter(e.target.value);
-    };
+  const handleTypesFilterChange = (e) => {
+    setTypesFilter(e.target.value);
+  };
 
-    const handleNameFilterChange = (e) => {
-        setNameFilter(e.target.value.toLowerCase());
-    };
+  const handleCategoryFilterChange = (e) => {
+    setCategoryFilter(e.target.value);
+  };
 
-    const handleEffectFilterChange = (e) => {
-        setEffectFilter(e.target.value.toLowerCase());
-    };
+  const handleNameFilterChange = (e) => {
+    setNameFilter(e.target.value.toLowerCase());
+  };
 
-    const handleTriggerFilterChange = (e) => {
-        setTriggerFilter(e.target.value.toLowerCase());
-    };
+  const handleEffectFilterChange = (e) => {
+    setEffectFilter(e.target.value.toLowerCase());
+  };
 
-    const handleNumberFilterChange = (e) => {
-        setNumberFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
+  const handleTriggerFilterChange = (e) => {
+    setTriggerFilter(e.target.value.toLowerCase());
+  };
 
-    const handleCostFilterChange = (e) => {
-        setCostFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
+  const handleNumberFilterChange = (e) => {
+    setNumberFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+  };
 
-    const handleCounterFilterChange = (e) => {
-        setCounterFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
+  const handleCostFilterChange = (e) => {
+    setCostFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+  };
 
-    const handlePowerFilterChange = (e) => {
-        setPowerFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
+  const handleCounterFilterChange = (e) => {
+    setCounterFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+  };
 
-    const filteredData = data.filter((variant) => {
-        const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
-        const setMatches = setFilter === 'All' || variant.details[0].set.some((set) => set.setNumber === setFilter);
-        const abilityMatches = abilityFilter === 'All' || variant.details[0].abilities.some((ability) => ability.name === abilityFilter);
-        const attributeMatches = attributeFilter === 'All' || variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter);
-        const typesMatches = typesFilter === 'All' || variant.details[0].types.some((types) => types.name === typesFilter);
-        const categoryMatches = categoryFilter === 'All' || variant.details[0].category.some((category) => category.name === categoryFilter);
-        const nameMatches = nameFilter === '' || variant.details[0].name.toLowerCase().includes(nameFilter);
-        const effectMatches = effectFilter === '' || variant.details[0].effect.toLowerCase().includes(effectFilter);
-        const triggerMatches = triggerFilter === '' || variant.details[0].trigger.toLowerCase().includes(triggerFilter);
-        const numberMatches =
-            numberFilter === '' ||
-            (typeof numberFilter === 'number' && variant.details[0].number === numberFilter);
-        const costMatches =
-            costFilter === '' ||
-            (typeof costFilter === 'number' && variant.details[0].cost_life === costFilter);
-        const powerMatches =
-            powerFilter === '' ||
-            (typeof powerFilter === 'number' && variant.details[0].power === powerFilter);
-            
-        const counterMatches = counterFilter === '' || variant.details[0].counter === counterFilter;
-      
-        return colorMatches && setMatches && abilityMatches && attributeMatches && typesMatches && categoryMatches && nameMatches && numberMatches && costMatches && counterMatches && powerMatches && effectMatches && triggerMatches;
-        
-      });
+  const handlePowerFilterChange = (e) => {
+    setPowerFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+  };
 
-    console.log(filteredData);
-      
-  
+  const filteredData = data.filter((variant) => {
+    const colorMatches =
+      colorFilter === 'All' ||
+      variant.details[0].color.some((color) => color.name === colorFilter);
+    const setMatches =
+      setFilter === 'All' ||
+      variant.details[0].set.some((set) => set.setNumber === setFilter);
+    const abilityMatches =
+      abilityFilter === 'All' ||
+      variant.details[0].abilities.some((ability) => ability.name === abilityFilter);
+    const attributeMatches =
+      attributeFilter === 'All' ||
+      variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter);
+    const typesMatches =
+      typesFilter === 'All' ||
+      variant.details[0].types.some((types) => types.name === typesFilter);
+    const categoryMatches =
+      categoryFilter === 'All' ||
+      variant.details[0].category.some((category) => category.name === categoryFilter);
+    const nameMatches =
+      nameFilter === '' || variant.details[0].name.toLowerCase().includes(nameFilter);
+    const effectMatches =
+      effectFilter === '' || variant.details[0].effect.toLowerCase().includes(effectFilter);
+    const triggerMatches =
+      triggerFilter === '' || variant.details[0].trigger.toLowerCase().includes(triggerFilter);
+    const numberMatches =
+      numberFilter === '' ||
+      (typeof numberFilter === 'number' && variant.details[0].number === numberFilter);
+    const costMatches =
+      costFilter === '' ||
+      (typeof costFilter === 'number' && variant.details[0].cost_life === costFilter);
+    const powerMatches =
+      powerFilter === '' ||
+      (typeof powerFilter === 'number' && variant.details[0].power === powerFilter);
+
+    const counterMatches = counterFilter === '' || variant.details[0].counter === counterFilter;
+
     return (
-      <>
-        <Head>
-          <title>Variants List</title>
-          <meta name="description" content="Variants List" />
-        </Head>
-        <div class='py-2'>
+      colorMatches &&
+      setMatches &&
+      abilityMatches &&
+      attributeMatches &&
+      typesMatches &&
+      categoryMatches &&
+      nameMatches &&
+      numberMatches &&
+      costMatches &&
+      counterMatches &&
+      powerMatches &&
+      effectMatches &&
+      triggerMatches
+    );
+  });
+
+  return (
+    <div>
+      <div className="py-2">
             <div class='py-1'>
                 <label class='p-3 font-semibold' htmlFor='nameFilter'>Filter by Name:</label>
                 <input
@@ -255,60 +273,49 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
                     className="border border-gray-300 rounded px-2 py-1 p-1"
                 />
             </div>
+      </div>
+      {filteredData.map((variant) => (
+        <div key={variant.id}>
+          {/* Render variant details */}
+          <p>{variant.details[0].name}</p>
+          <img src={variant.imgSource} alt={variant.details[0].name} />
         </div>
-        
-        <div className='grid grid-cols-5 gap-2 p-1' style={{ alignItems: 'start' }}>
-          
-          
-        {filteredData.map((variant) => (
-            <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>
-                <img src={variant.imgSource} alt={variant.details[0].name} />
-                <div>
-                    <Counter />
-                </div>
-            </div>
-        ))}
-        </div>
-      </>
-    );
-  }
-  
-
+      ))}
+    </div>
+  );
+};
 
 export async function getServerSideProps(context) {
-    // Gets data for all the variants from the table
-    const response = await fetch(`${process.env.NEXT_API_URL}/variants`)
-    const data = await response.json()
+    // Retrieves data from the various populating tables to fill in the drop-down lists for filtering
+    const colorResponse = await fetch(`${process.env.NEXT_API_URL}/colors`);
+    const colorData = await colorResponse.json();
+  
+    const setResponse = await fetch(`${process.env.NEXT_API_URL}/sets`);
+    const setData = await setResponse.json();
+  
+    const abilityResponse = await fetch(`${process.env.NEXT_API_URL}/abilities`);
+    const abilityData = await abilityResponse.json();
+  
+    const attributeResponse = await fetch(`${process.env.NEXT_API_URL}/attributes`);
+    const attributeData = await attributeResponse.json();
+  
+    const typesResponse = await fetch(`${process.env.NEXT_API_URL}/types`);
+    const typesData = await typesResponse.json();
+  
+    const categoryResponse = await fetch(`${process.env.NEXT_API_URL}/categories`);
+    const categoryData = await categoryResponse.json();
+  
     
-    //Retrieves data from the various populating tables to fill in the drop down lists for filtering
-    const colorResponse = await fetch(`${process.env.NEXT_API_URL}/colors`)
-    const colorData = await colorResponse.json()
-
-    const setResponse = await fetch(`${process.env.NEXT_API_URL}/sets`)
-    const setData = await setResponse.json()
-
-    const abilityResponse = await fetch(`${process.env.NEXT_API_URL}/abilities`)
-    const abilityData = await abilityResponse.json()
-
-    const attributeResponse = await fetch(`${process.env.NEXT_API_URL}/attributes`)
-    const attributeData = await attributeResponse.json()
-
-    const typesResponse = await fetch(`${process.env.NEXT_API_URL}/types`)
-    const typesData = await typesResponse.json()
-
-    const categoryResponse = await fetch(`${process.env.NEXT_API_URL}/categories`)
-    const categoryData = await categoryResponse.json()
-
-    console.log("data",data)
     return {
-        props: {
-            data,
-            colorData,
-            setData,
-            abilityData,
-            attributeData,
-            typesData,
-            categoryData
-        }
-    }
-}
+      props: {
+        colorData,
+        setData,
+        abilityData,
+        attributeData,
+        typesData,
+        categoryData,
+      },
+    };
+  }
+
+  export default Filtering;
