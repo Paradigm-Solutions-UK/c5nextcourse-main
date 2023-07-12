@@ -1,16 +1,25 @@
 import React from 'react'
 import Head from 'next/head'
 import {useState} from 'react'
+import _ from 'lodash';
 import Counter from '@/components/Counter'
 // import cardColors from '@/data/card_colors';
 
-export default function Variants({ data, colorData, setData, abilityData, attributeData}) {
+export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) {
     console.log(data)
     
     const [colorFilter, setColorFilter] = useState('All');
     const [setFilter, setSetFilter] = useState('All');
     const [abilityFilter, setAbilityFilter] = useState('All');
     const [attributeFilter, setAttributeFilter] = useState('All');
+    const [typesFilter, setTypesFilter] = useState('All');
+    const [categoryFilter, setCategoryFilter] = useState('All');
+    const [nameFilter, setNameFilter] = useState('');
+    const [numberFilter, setNumberFilter] = useState('');
+    const [costFilter, setCostFilter] = useState('');
+    const [counterFilter, setCounterFilter] = useState('');
+    const [powerFilter, setPowerFilter] = useState('');
+    const [effectFilter, setEffectFilter] = useState('');
     
     const handleColorFilterChange = (e) => {
       setColorFilter(e.target.value);
@@ -28,18 +37,69 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
     setAttributeFilter(e.target.value);
     };
     
+    const handleTypesFilterChange = (e) => {
+        setTypesFilter(e.target.value);
+    };
+
+    const handleCategoryFilterChange = (e) => {
+        setCategoryFilter(e.target.value);
+    };
+
+    const handleNameFilterChange = (e) => {
+        setNameFilter(e.target.value.toLowerCase());
+    };
+
+    const handleEffectFilterChange = (e) => {
+        setEffectFilter(e.target.value.toLowerCase());
+    };
+
+    const handleNumberFilterChange = (e) => {
+        setNumberFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+    };
+
+    const handleCostFilterChange = (e) => {
+        setCostFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+    };
+
+    const handleCounterFilterChange = (e) => {
+        setCounterFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+    };
+
+    const handlePowerFilterChange = (e) => {
+        setPowerFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
+    };
+
+
     
+      
 
     const filteredData = data.filter((variant) => {
         const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
         const setMatches = setFilter === 'All' || variant.details[0].set.some((set) => set.setNumber === setFilter);
         const abilityMatches = abilityFilter === 'All' || variant.details[0].abilities.some((ability) => ability.name === abilityFilter);
         const attributeMatches = attributeFilter === 'All' || variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter);
+        const typesMatches = typesFilter === 'All' || variant.details[0].types.some((types) => types.name === typesFilter);
+        const categoryMatches = categoryFilter === 'All' || variant.details[0].category.some((category) => category.name === categoryFilter);
+        const nameMatches = nameFilter === '' || variant.details[0].name.toLowerCase().includes(nameFilter);
+        const effectMatches = effectFilter === '' || variant.details[0].effect.toLowerCase().includes(effectFilter);
+        const numberMatches =
+            numberFilter === '' ||
+            (typeof numberFilter === 'number' && variant.details[0].number === numberFilter);
+        const costMatches =
+            costFilter === '' ||
+            (typeof costFilter === 'number' && variant.details[0].cost_life === costFilter);
+        const powerMatches =
+            powerFilter === '' ||
+            (typeof powerFilter === 'number' && variant.details[0].power === powerFilter);
+            
+        const counterMatches = counterFilter === '' || variant.details[0].counter === counterFilter;
 
       
-        return colorMatches && setMatches && abilityMatches && attributeMatches;
-        
+        return colorMatches && setMatches && abilityMatches && attributeMatches && typesMatches && categoryMatches && nameMatches && numberMatches && costMatches && counterMatches && powerMatches && effectMatches;
+        // return colorMatches && setMatches && abilityMatches && attributeMatches && typesMatches && categoryMatches && nameMatches;
       });
+
+    console.log(filteredData);
       
   
     return (
@@ -48,6 +108,40 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
           <title>Variants List</title>
           <meta name="description" content="Variants List" />
         </Head>
+        <div>
+            <label htmlFor='nameFilter'>Filter by Name:</label>
+            <input
+                id="nameFilter"
+                type="text"
+                value={nameFilter}
+                onChange={handleNameFilterChange}
+                placeholder="Enter name here"
+                className="border border-gray-300 rounded px-2 py-1 p-1"
+            />
+        </div>
+
+        <div>
+            <label htmlFor='setFilter'>Filter by Set:</label>
+            <select id='setFilter' value={setFilter} onChange={handleSetFilterChange}>
+                <option value='All'>All</option>
+                {_.sortBy(setData, 'setNumber').map((set) => (
+                    <option key={set.id} value={set.setNumber}>{set.setNumber} - {set.setName}</option>
+                ))}
+            </select>
+        </div>
+
+        <div>
+            <label htmlFor='numberFilter'>Filter by Number:</label>
+            <input
+                id="numberFilter"
+                type="number"
+                value={numberFilter}
+                onChange={handleNumberFilterChange}
+                placeholder="Enter number here"
+                className="border border-gray-300 rounded px-2 py-1"
+            />
+        </div>
+
         <div>
             <label htmlFor='colorFilter'>Filter by Color:</label>
             <select id='colorFilter' value={colorFilter} onChange={handleColorFilterChange}>
@@ -60,11 +154,58 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
         </div>
 
         <div>
-            <label htmlFor='setFilter'>Filter by Set:</label>
-            <select id='setFilter' value={setFilter} onChange={handleSetFilterChange}>
+            <label htmlFor='costFilter'>Filter by Cost/Life:</label>
+            <input
+                id="costFilter"
+                type="number"
+                value={costFilter}
+                onChange={handleCostFilterChange}
+                placeholder="Enter cost / life here"
+                className="border border-gray-300 rounded px-2 py-1"
+            />
+        </div>
+
+        <div>
+            <label htmlFor='powerFilter'>Filter by Power:</label>
+            <input
+                id="powerFilter"
+                type="number"
+                value={powerFilter}
+                onChange={handlePowerFilterChange}
+                placeholder="Enter power here"
+                className="border border-gray-300 rounded px-2 py-1"
+            />
+        </div>
+
+        <div>
+            <label htmlFor='counterFilter'>Filter by Counter:</label>
+            <select id='counterFilter' value={counterFilter} onChange={handleCounterFilterChange}>
                 <option value='All'>All</option>
-                {setData.map((set) => (
-                <option key={set.id} value={set.setNumber}>{set.setNumber} - {set.setName}</option>
+                <option value='0'>None</option>
+                <option value='1000'>+1000</option>
+                <option value='2000'>+2000</option>
+                
+            </select>
+            
+        </div>
+
+
+        <div>
+            <label htmlFor='categoryFilter'>Filter by Category:</label>
+            <select id='categoryFilter' value={categoryFilter} onChange={handleCategoryFilterChange}>
+                <option value='All'>All</option>
+                {categoryData.map((category) => (
+                <option key={category.id} value={category.name}>{category.name}</option>
+                ))}
+            </select>
+        </div>
+
+        <div>
+            <label htmlFor='typesFilter'>Filter by Types:</label>
+            <select id='typesFilter' value={typesFilter} onChange={handleTypesFilterChange}>
+                <option value='All'>All</option>
+                {_.sortBy(typesData, 'name').map((types) => (
+                    <option key={types.id} value={types.name}>{types.name}</option>
                 ))}
             </select>
         </div>
@@ -89,18 +230,31 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
             </select>
         </div>
 
+        <div>
+            <label htmlFor='effectFilter'>Filter by Effect:</label>
+            <input
+                id="effectFilter"
+                type="text"
+                value={effectFilter}
+                onChange={handleEffectFilterChange}
+                placeholder="enter effect search term"
+                className="border border-gray-300 rounded px-2 py-1 p-1"
+            />
+        </div>
+        
         <div className='grid grid-cols-5 gap-2 p-1' style={{ alignItems: 'start' }}>
           
-          {filteredData.map((variant) => (
+          
+            {filteredData.map((variant) => (
             <div className='grid-auto-rows: min-content' key={variant.id} style={{ alignItems: 'start' }}>
-              <img src={variant.imgSource} alt={variant.details[0].name} />
-              <div>
+                <img src={variant.imgSource} alt={variant.details[0].name} />
+                <div>
                 
                 <Counter />
                 
-              </div>
+                </div>
             </div>
-          ))}
+            ))}
         </div>
       </>
     );
@@ -109,9 +263,11 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
 
 
 export async function getServerSideProps(context) {
+    // Gets data for all the variants from the table
     const response = await fetch(`${process.env.NEXT_API_URL}/variants`)
     const data = await response.json()
-
+    
+    //Retrieves data from the various populating tables to fill in the drop down lists for filtering
     const colorResponse = await fetch(`${process.env.NEXT_API_URL}/colors`)
     const colorData = await colorResponse.json()
 
@@ -124,6 +280,12 @@ export async function getServerSideProps(context) {
     const attributeResponse = await fetch(`${process.env.NEXT_API_URL}/attributes`)
     const attributeData = await attributeResponse.json()
 
+    const typesResponse = await fetch(`${process.env.NEXT_API_URL}/types`)
+    const typesData = await typesResponse.json()
+
+    const categoryResponse = await fetch(`${process.env.NEXT_API_URL}/categories`)
+    const categoryData = await categoryResponse.json()
+
     console.log("data",data)
     return {
         props: {
@@ -131,7 +293,9 @@ export async function getServerSideProps(context) {
             colorData,
             setData,
             abilityData,
-            attributeData
+            attributeData,
+            typesData,
+            categoryData
         }
     }
 }
