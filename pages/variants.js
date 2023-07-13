@@ -3,6 +3,7 @@ import Head from 'next/head'
 import {useState} from 'react'
 import _ from 'lodash';
 import Counter from '@/components/Counter'
+import NavBar from '@/components/NavBar';
 // import cardColors from '@/data/card_colors';
 
 export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) {
@@ -106,168 +107,171 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
     return (
       <>
         <Head>
-          <title>Variants List</title>
-          <meta name="description" content="Variants List" />
+            
         </Head>
-        <div class='py-2'>
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='nameFilter'>Filter by Name:</label>
-                <input
-                    id="nameFilter"
-                    type="text"
-                    value={nameFilter}
-                    onChange={handleNameFilterChange}
-                    placeholder="Enter Name here"
-                    className="border border-gray-300 rounded px-2 py-1 p-1"
-                />
-            </div>
+        <div class='flex py-16 relative'>
+            
+            <NavBar/>
+            <div id='cardFilters' class='p-2 relative z-0'>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='nameFilter'>Filter by Name:</label>
+                    <input
+                        id="nameFilter"
+                        type="text"
+                        value={nameFilter}
+                        onChange={handleNameFilterChange}
+                        placeholder="Enter Name here"
+                        className="border border-gray-300 rounded px-2 py-1 p-1"
+                    />
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='setFilter'>Filter by Set:</label>
-                <select id='setFilter' value={setFilter} onChange={handleSetFilterChange}>
-                    <option value='All'>All</option>
-                    {_.sortBy(setData, 'setNumber').map((set) => (
-                        <option key={set.id} value={set.setNumber}>{set.setNumber} - {set.setName}</option>
-                    ))}
-                </select>
-            </div>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='setFilter'>Filter by Set:</label>
+                    <select id='setFilter' value={setFilter} onChange={handleSetFilterChange}>
+                        <option value='All'>All</option>
+                        {_.sortBy(setData, 'setNumber').map((set) => (
+                            <option key={set.id} value={set.setNumber}>{set.setNumber} - {set.setName}</option>
+                        ))}
+                    </select>
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='numberFilter'>Filter by Number:</label>
-                <input
-                    id="numberFilter"
-                    type="number"
-                    value={numberFilter}
-                    onChange={handleNumberFilterChange}
-                    placeholder="Enter Number here"
-                    className="border border-gray-300 rounded px-2 py-1"
-                />
-            </div>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='numberFilter'>Filter by Number:</label>
+                    <input
+                        id="numberFilter"
+                        type="number"
+                        value={numberFilter}
+                        onChange={handleNumberFilterChange}
+                        placeholder="Enter Number here"
+                        className="border border-gray-300 rounded px-2 py-1"
+                    />
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='colorFilter'>Filter by Color:</label>
-                <select id='colorFilter' value={colorFilter} onChange={handleColorFilterChange}>
-                    <option value='All'>All</option>
-                    {colorData.map((color) => (
-                    <option key={color.id} value={color.name}>{color.name}</option>
-                    ))}
-                </select>
-                
-            </div>
-
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='costFilter'>Filter by Cost/Life:</label>
-                <input
-                    id="costFilter"
-                    type="number"
-                    value={costFilter}
-                    onChange={handleCostFilterChange}
-                    placeholder="Enter Cost / Life here"
-                    className="border border-gray-300 rounded px-2 py-1"
-                />
-            </div>
-
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='powerFilter'>Filter by Power:</label>
-                <input
-                    id="powerFilter"
-                    type="number"
-                    value={powerFilter}
-                    onChange={handlePowerFilterChange}
-                    placeholder="Enter Power here"
-                    className="border border-gray-300 rounded px-2 py-1"
-                />
-            </div>
-
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='counterFilter'>Filter by Counter:</label>
-                <select id='counterFilter' value={counterFilter} onChange={handleCounterFilterChange}>
-                    <option value='All'>All</option>
-                    <option value='0'>None</option>
-                    <option value='1000'>+1000</option>
-                    <option value='2000'>+2000</option>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='colorFilter'>Filter by Color:</label>
+                    <select id='colorFilter' value={colorFilter} onChange={handleColorFilterChange}>
+                        <option value='All'>All</option>
+                        {colorData.map((color) => (
+                        <option key={color.id} value={color.name}>{color.name}</option>
+                        ))}
+                    </select>
                     
-                </select>
-                
-            </div>
+                </div>
+
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='costFilter'>Filter by Cost/Life:</label>
+                    <input
+                        id="costFilter"
+                        type="number"
+                        value={costFilter}
+                        onChange={handleCostFilterChange}
+                        placeholder="Enter Cost / Life here"
+                        className="border border-gray-300 rounded px-2 py-1"
+                    />
+                </div>
+
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='powerFilter'>Filter by Power:</label>
+                    <input
+                        id="powerFilter"
+                        type="number"
+                        value={powerFilter}
+                        onChange={handlePowerFilterChange}
+                        placeholder="Enter Power here"
+                        className="border border-gray-300 rounded px-2 py-1"
+                    />
+                </div>
+
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='counterFilter'>Filter by Counter:</label>
+                    <select id='counterFilter' value={counterFilter} onChange={handleCounterFilterChange}>
+                        <option value='All'>All</option>
+                        <option value='0'>None</option>
+                        <option value='1000'>+1000</option>
+                        <option value='2000'>+2000</option>
+                        
+                    </select>
+                    
+                </div>
 
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='categoryFilter'>Filter by Category:</label>
-                <select id='categoryFilter' value={categoryFilter} onChange={handleCategoryFilterChange}>
-                    <option value='All'>All</option>
-                    {categoryData.map((category) => (
-                    <option key={category.id} value={category.name}>{category.name}</option>
-                    ))}
-                </select>
-            </div>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='categoryFilter'>Filter by Category:</label>
+                    <select id='categoryFilter' value={categoryFilter} onChange={handleCategoryFilterChange}>
+                        <option value='All'>All</option>
+                        {categoryData.map((category) => (
+                        <option key={category.id} value={category.name}>{category.name}</option>
+                        ))}
+                    </select>
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='typesFilter'>Filter by Types:</label>
-                <select id='typesFilter' value={typesFilter} onChange={handleTypesFilterChange}>
-                    <option value='All'>All</option>
-                    {_.sortBy(typesData, 'name').map((types) => (
-                        <option key={types.id} value={types.name}>{types.name}</option>
-                    ))}
-                </select>
-            </div>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='typesFilter'>Filter by Types:</label>
+                    <select id='typesFilter' value={typesFilter} onChange={handleTypesFilterChange}>
+                        <option value='All'>All</option>
+                        {_.sortBy(typesData, 'name').map((types) => (
+                            <option key={types.id} value={types.name}>{types.name}</option>
+                        ))}
+                    </select>
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='abilityFilter'>Filter by Ability:</label>
-                <select id='abilityFilter' value={abilityFilter} onChange={handleAbilityFilterChange}>
-                    <option value='All'>All</option>
-                    {abilityData.map((ability) => (
-                    <option key={ability.id} value={ability.name}>{ability.name}</option>
-                    ))}
-                </select>
-            </div>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='abilityFilter'>Filter by Ability:</label>
+                    <select id='abilityFilter' value={abilityFilter} onChange={handleAbilityFilterChange}>
+                        <option value='All'>All</option>
+                        {abilityData.map((ability) => (
+                        <option key={ability.id} value={ability.name}>{ability.name}</option>
+                        ))}
+                    </select>
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='attributeFilter'>Filter by Attribute:</label>
-                <select id='attributeFilter' value={attributeFilter} onChange={handleAttributeFilterChange}>
-                    <option value='All'>All</option>
-                    {attributeData.map((attribute) => (
-                    <option key={attribute.id} value={attribute.name}>{attribute.name}</option>
-                    ))}
-                </select>
-            </div>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='attributeFilter'>Filter by Attribute:</label>
+                    <select id='attributeFilter' value={attributeFilter} onChange={handleAttributeFilterChange}>
+                        <option value='All'>All</option>
+                        {attributeData.map((attribute) => (
+                        <option key={attribute.id} value={attribute.name}>{attribute.name}</option>
+                        ))}
+                    </select>
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='effectFilter'>Filter by Effect:</label>
-                <input
-                    id="effectFilter"
-                    type="text"
-                    value={effectFilter}
-                    onChange={handleEffectFilterChange}
-                    placeholder="Enter Effect search term"
-                    className="border border-gray-300 rounded px-2 py-1 p-1"
-                />
-            </div>
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='effectFilter'>Filter by Effect:</label>
+                    <input
+                        id="effectFilter"
+                        type="text"
+                        value={effectFilter}
+                        onChange={handleEffectFilterChange}
+                        placeholder="Enter Effect search term"
+                        className="border border-gray-300 rounded px-2 py-1 p-1"
+                    />
+                </div>
 
-            <div class='py-1'>
-                <label class='p-3 font-semibold' htmlFor='triggerFilter'>Filter by Trigger:</label>
-                <input
-                    id="triggerFilter"
-                    type="text"
-                    value={triggerFilter}
-                    onChange={handleTriggerFilterChange}
-                    placeholder="Enter Trigger search term"
-                    className="border border-gray-300 rounded px-2 py-1 p-1"
-                />
-            </div>
-        </div>
-        
-        <div className='grid grid-cols-5 gap-2 p-1' style={{ alignItems: 'start' }}>
-          
-          
-        {filteredData.map((variant) => (
-            <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>
-                <img src={variant.imgSource} alt={variant.details[0].name} />
-                <div>
-                    <Counter />
+                <div class='py-1'>
+                    <label class='p-3 font-semibold' htmlFor='triggerFilter'>Filter by Trigger:</label>
+                    <input
+                        id="triggerFilter"
+                        type="text"
+                        value={triggerFilter}
+                        onChange={handleTriggerFilterChange}
+                        placeholder="Enter Trigger search term"
+                        className="border border-gray-300 rounded px-2 py-1 p-1"
+                    />
                 </div>
             </div>
-        ))}
+            
+            <div className='grid grid-cols-5 gap-2 p-1 z-0' style={{ alignItems: 'start' }}>
+            
+            
+                {filteredData.map((variant) => (
+                    <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>
+                        <img src={variant.imgSource} alt={variant.details[0].name} />
+                        <div>
+                            <Counter />
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
       </>
     );
