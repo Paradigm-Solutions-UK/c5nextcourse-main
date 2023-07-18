@@ -4,11 +4,16 @@ import {useState} from 'react'
 import _ from 'lodash';
 import Counter from '@/components/Counter'
 import NavBar from '@/components/NavBar';
-import FilterMyStuff from '@/components/FilterMyStuff';
+// import { useNavigate } from "react-router-dom";
+import PopOutMenu from '@/components/PopOutMenu';
 // import cardColors from '@/data/card_colors';
 
 export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) {
     console.log(data)
+
+    const [selectedVariant, setSelectedVariant] = useState(null);
+    const [isPopOutOpen, setIsPopOutOpen] = useState(false);
+
     
     const [colorFilter, setColorFilter] = useState('All');
     const [setFilter, setSetFilter] = useState('All');
@@ -103,8 +108,17 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
       });
 
     console.log(filteredData);
-    
-    
+
+    const handleImageClick = (variant) => {
+        setSelectedVariant(variant);
+        setIsPopOutOpen(!isPopOutOpen);
+    };
+
+    const handlePopOutClose = () => {
+        setIsPopOutOpen(false);
+    };
+      
+
   
     return (
       <>
@@ -269,22 +283,33 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
                 </div>
             </div>
             
-            <div class='grid grid-cols-5 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
+            <div class='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
             
             
                 {filteredData.map((variant) => (
                     <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>
-                        <img src={variant.imgSource} alt={variant.details[0].name} />
+                        <div onClick={() => handleImageClick(variant)}>
+                            <img src={variant.imgSource} alt={variant.details[0].name} />
+                        </div>
                         <div class='p-1'>
                             <Counter />
                         </div>
                     </div>
                 ))}
+
             </div>
+
+            {isPopOutOpen && selectedVariant && (
+                <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center" onClick={handlePopOutClose}>
+                    <PopOutMenu variant={selectedVariant} onClose={handlePopOutClose} />
+                </div>
+            )}
         </div>
       </>
     );
   }
+
+  
   
 
 
