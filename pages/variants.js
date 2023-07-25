@@ -1,19 +1,30 @@
 import React from 'react'
 import Head from 'next/head'
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import _ from 'lodash';
 import Counter from '@/components/Counter'
 import NavBar from '@/components/NavBar';
-// import { useNavigate } from "react-router-dom";
 import PopOutMenu from '@/components/PopOutMenu';
+import { auth } from '@/components/auth/firebase';
+import AuthDetails from '@/components/auth/AuthDetails';
+import { onAuthStateChanged } from 'firebase/auth'
+import ToolProvider, { useTool } from '@/components/ToolContext';
+import { AuthProvider, useAuth } from '@/components/auth/AuthContext';
+
+
+// import { useNavigate } from "react-router-dom";
+
 // import cardColors from '@/data/card_colors';
 
+
+
 export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) {
-    console.log(data)
+    // console.log(data)
+    const { authUser, setAuthUser } = useAuth();
 
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [isPopOutOpen, setIsPopOutOpen] = useState(false);
-
+    
     
     const [colorFilter, setColorFilter] = useState('All');
     const [setFilter, setSetFilter] = useState('All');
@@ -28,6 +39,7 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
     const [powerFilter, setPowerFilter] = useState('');
     const [effectFilter, setEffectFilter] = useState('');
     const [triggerFilter, setTriggerFilter] = useState('');
+
     
     const handleColorFilterChange = (e) => {
       setColorFilter(e.target.value);
@@ -56,11 +68,11 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
     const handleNameFilterChange = (e) => {
         setNameFilter(e.target.value.toLowerCase());
     };
-
+    
     const handleEffectFilterChange = (e) => {
         setEffectFilter(e.target.value.toLowerCase());
     };
-
+    
     const handleTriggerFilterChange = (e) => {
         setTriggerFilter(e.target.value.toLowerCase());
     };
@@ -80,6 +92,24 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
     const handlePowerFilterChange = (e) => {
         setPowerFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
     };
+    
+    
+
+    // Use useEffect to listen for changes in the authentication state
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setAuthUser(user); // Set the user object if the user is signed in
+            } else {
+            setAuthUser(null); // Set null if the user is signed out
+        }
+        });
+
+        // Clean up the listener when the component unmounts
+        return () => unsubscribe();
+    }, []);
+
+    
 
     const filteredData = data.filter((variant) => {
         const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
@@ -107,7 +137,7 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
         
       });
 
-    console.log(filteredData);
+    // console.log(filteredData);
 
     const handleImageClick = (variant) => {
         setSelectedVariant(variant);
@@ -118,202 +148,223 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
         setIsPopOutOpen(false);
     };
       
+    // console.log(auth.currentUser)
+    
 
-  
+    if (loading) {
+        // Show loading spinner or placeholder while checking the auth state
+        return <div>Loading...</div>;
+      }
+    
+      if (!authUser) {
+        // User is not authenticated, show login/register UI
+        return <div>Please login or register.</div>;
+      }
+
     return (
       <>
-        <Head>
-            <title>Card Library</title>
-        </Head>
-        <NavBar/>
-        <div class='flex py-20 relative'>
-            <div class='sm:flex-row md:flex-row lg:flex-col xl:flex-col'>
-                {/* <FilterMyStuff/> */}
-                <div id='cardFilters' class='p-2 relative z-0 overflow-y-auto max-h-screen w-auto'>
-                    
-                    <div class='w-auto'  id='filterArea' style={{display:'none'}} >
-                    
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='nameFilter'>Filter by Name:</label>
-                            <input
-                                id="nameFilter"
-                                type="text"
-                                value={nameFilter}
-                                onChange={handleNameFilterChange}
-                                placeholder="Enter Name here"
-                                className="border border-gray-300 rounded px-2 py-1 p-1 text-center"
-                            />
-                        </div>
+        <AuthProvider>
+            <Head>
+                <title>Card Library</title>
+            </Head>
+            
+                <NavBar authUser={authUser}/>
+            
+            <div className='flex py-20 relative'>
+                <div className='sm:flex-row md:flex-row lg:flex-col xl:flex-col'>
+                    {/* <FilterMyStuff/> */}
+                    <div id='cardFilters' class='p-2 relative z-0 overflow-y-auto max-h-screen w-auto'>
+                        
+                        <div class='w-auto'  id='filterArea' style={{display:'none'}} >
+                        
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='nameFilter'>Filter by Name:</label>
+                                <input
+                                    id="nameFilter"
+                                    type="text"
+                                    value={nameFilter}
+                                    onChange={handleNameFilterChange}
+                                    placeholder="Enter Name here"
+                                    className="border border-gray-300 rounded px-2 py-1 p-1 text-center"
+                                />
+                            </div>
 
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='setFilter'>Filter by Set:</label>
-                            <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='setFilter' value={setFilter} onChange={handleSetFilterChange}>
-                                <option class='text-left' value='All'>All</option>
-                                {_.sortBy(setData, 'setNumber').map((set) => (
-                                    <option class='text-left' key={set.id} value={set.setNumber}>{set.setNumber} - {set.setName}</option>
-                                ))}
-                            </select>
-                        </div>
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='setFilter'>Filter by Set:</label>
+                                <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='setFilter' value={setFilter} onChange={handleSetFilterChange}>
+                                    <option class='text-left' value='All'>All</option>
+                                    {_.sortBy(setData, 'setNumber').map((set) => (
+                                        <option class='text-left' key={set.id} value={set.setNumber}>{set.setNumber} - {set.setName}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='numberFilter'>Filter by Number:</label>
-                            <input
-                                id="numberFilter"
-                                type="number"
-                                value={numberFilter}
-                                onChange={handleNumberFilterChange}
-                                placeholder="Enter Number here"
-                                className="border border-gray-300 rounded px-2 py-1 text-center"
-                            />
-                        </div>
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='numberFilter'>Filter by Number:</label>
+                                <input
+                                    id="numberFilter"
+                                    type="number"
+                                    value={numberFilter}
+                                    onChange={handleNumberFilterChange}
+                                    placeholder="Enter Number here"
+                                    className="border border-gray-300 rounded px-2 py-1 text-center"
+                                />
+                            </div>
 
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='colorFilter'>Filter by Color:</label>
-                            <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='colorFilter' value={colorFilter} onChange={handleColorFilterChange}>
-                                <option class='text-left' value='All'>All</option>
-                                {colorData.map((color) => (
-                                <option class='text-left' key={color.id} value={color.name}>{color.name}</option>
-                                ))}
-                            </select>
-                            
-                        </div>
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='costFilter'>Filter by Cost/Life:</label>
-                            <input
-                                id="costFilter"
-                                type="number"
-                                value={costFilter}
-                                onChange={handleCostFilterChange}
-                                placeholder="Enter Cost / Life here"
-                                className="border border-gray-300 rounded px-2 py-1 text-center"
-                            />
-                        </div>
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='powerFilter'>Filter by Power:</label>
-                            <input
-                                id="powerFilter"
-                                type="number"
-                                value={powerFilter}
-                                onChange={handlePowerFilterChange}
-                                placeholder="Enter Power here"
-                                className="border border-gray-300 rounded px-2 py-1 text-center"
-                            />
-                        </div>
-                    
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='counterFilter'>Filter by Counter:</label>
-                            <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='counterFilter' value={counterFilter} onChange={handleCounterFilterChange}>
-                                <option class='text-left' value='All'>All</option>
-                                <option class='text-left' value='0'>None</option>
-                                <option class='text-left' value='1000'>+1000</option>
-                                <option class='text-left' value='2000'>+2000</option>
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='colorFilter'>Filter by Color:</label>
+                                <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='colorFilter' value={colorFilter} onChange={handleColorFilterChange}>
+                                    <option class='text-left' value='All'>All</option>
+                                    {colorData.map((color) => (
+                                    <option class='text-left' key={color.id} value={color.name}>{color.name}</option>
+                                    ))}
+                                </select>
                                 
-                            </select>
+                            </div>
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='costFilter'>Filter by Cost/Life:</label>
+                                <input
+                                    id="costFilter"
+                                    type="number"
+                                    value={costFilter}
+                                    onChange={handleCostFilterChange}
+                                    placeholder="Enter Cost / Life here"
+                                    className="border border-gray-300 rounded px-2 py-1 text-center"
+                                />
+                            </div>
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='powerFilter'>Filter by Power:</label>
+                                <input
+                                    id="powerFilter"
+                                    type="number"
+                                    value={powerFilter}
+                                    onChange={handlePowerFilterChange}
+                                    placeholder="Enter Power here"
+                                    className="border border-gray-300 rounded px-2 py-1 text-center"
+                                />
+                            </div>
+                        
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='counterFilter'>Filter by Counter:</label>
+                                <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='counterFilter' value={counterFilter} onChange={handleCounterFilterChange}>
+                                    <option class='text-left' value='All'>All</option>
+                                    <option class='text-left' value='0'>None</option>
+                                    <option class='text-left' value='1000'>+1000</option>
+                                    <option class='text-left' value='2000'>+2000</option>
+                                    
+                                </select>
+                                
+                            </div>
+
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='categoryFilter'>Filter by Category:</label>
+                                <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='categoryFilter' value={categoryFilter} onChange={handleCategoryFilterChange}>
+                                    <option  class='text-left' value='All'>All</option>
+                                    {categoryData.map((category) => (
+                                    <option class='text-left' key={category.id} value={category.name}>{category.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='typesFilter'>Filter by Types:</label>
+                                <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='typesFilter' value={typesFilter} onChange={handleTypesFilterChange}>
+                                    <option class='text-left' value='All'>All</option>
+                                    {_.sortBy(typesData, 'name').map((types) => (
+                                        <option class='text-left' key={types.id} value={types.name}>{types.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='abilityFilter'>Filter by Ability:</label>
+                                <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='abilityFilter' value={abilityFilter} onChange={handleAbilityFilterChange}>
+                                    <option class='text-left' value='All'>All</option>
+                                    {abilityData.map((ability) => (
+                                    <option class='text-left' key={ability.id} value={ability.name}>{ability.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='attributeFilter'>Filter by Attribute:</label>
+                                <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='attributeFilter' value={attributeFilter} onChange={handleAttributeFilterChange}>
+                                    <option class='text-left' value='All'>All</option>
+                                    {attributeData.map((attribute) => (
+                                    <option class='text-left' key={attribute.id} value={attribute.name}>{attribute.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='effectFilter'>Filter by Effect:</label>
+                                <input
+                                    id="effectFilter"
+                                    type="text"
+                                    value={effectFilter}
+                                    onChange={handleEffectFilterChange}
+                                    placeholder="Enter Effect search term"
+                                    className="border border-gray-300 rounded px-2 py-1 p-1 text-center"
+                                />
+                            </div>
+
+                            <div class='py-1'>
+                                <label class='p-3 font-semibold' htmlFor='triggerFilter'>Filter by Trigger:</label>
+                                <input
+                                    id="triggerFilter"
+                                    type="text"
+                                    value={triggerFilter}
+                                    onChange={handleTriggerFilterChange}
+                                    placeholder="Enter Trigger search term"
+                                    className="border border-gray-300 rounded px-2 py-1 p-1 text-center"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
+                
+                
+                    {_.sortBy(filteredData, 'id').map((variant) => (
+                        <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>
+                            <div onClick={() => handleImageClick(variant)}>
+                                <img src={variant.imgSource} alt={variant.details[0].name} />
+                            </div>
+                            <div class='p-1'>
+                                
+                                {authUser ? <Counter /> : null}
+                                
                             
+                            </div>
                         </div>
+                    ))}
 
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='categoryFilter'>Filter by Category:</label>
-                            <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='categoryFilter' value={categoryFilter} onChange={handleCategoryFilterChange}>
-                                <option  class='text-left' value='All'>All</option>
-                                {categoryData.map((category) => (
-                                <option class='text-left' key={category.id} value={category.name}>{category.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='typesFilter'>Filter by Types:</label>
-                            <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='typesFilter' value={typesFilter} onChange={handleTypesFilterChange}>
-                                <option class='text-left' value='All'>All</option>
-                                {_.sortBy(typesData, 'name').map((types) => (
-                                    <option class='text-left' key={types.id} value={types.name}>{types.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='abilityFilter'>Filter by Ability:</label>
-                            <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='abilityFilter' value={abilityFilter} onChange={handleAbilityFilterChange}>
-                                <option class='text-left' value='All'>All</option>
-                                {abilityData.map((ability) => (
-                                <option class='text-left' key={ability.id} value={ability.name}>{ability.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='attributeFilter'>Filter by Attribute:</label>
-                            <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='attributeFilter' value={attributeFilter} onChange={handleAttributeFilterChange}>
-                                <option class='text-left' value='All'>All</option>
-                                {attributeData.map((attribute) => (
-                                <option class='text-left' key={attribute.id} value={attribute.name}>{attribute.name}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='effectFilter'>Filter by Effect:</label>
-                            <input
-                                id="effectFilter"
-                                type="text"
-                                value={effectFilter}
-                                onChange={handleEffectFilterChange}
-                                placeholder="Enter Effect search term"
-                                className="border border-gray-300 rounded px-2 py-1 p-1 text-center"
-                            />
-                        </div>
-
-                        <div class='py-1'>
-                            <label class='p-3 font-semibold' htmlFor='triggerFilter'>Filter by Trigger:</label>
-                            <input
-                                id="triggerFilter"
-                                type="text"
-                                value={triggerFilter}
-                                onChange={handleTriggerFilterChange}
-                                placeholder="Enter Trigger search term"
-                                className="border border-gray-300 rounded px-2 py-1 p-1 text-center"
-                            />
-                        </div>
-                    </div>
                 </div>
-            </div>
-            
-            <div class='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
-            
-            
-                {filteredData.map((variant) => (
-                    <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>
-                        <div onClick={() => handleImageClick(variant)}>
-                            <img src={variant.imgSource} alt={variant.details[0].name} />
-                        </div>
-                        <div class='p-1'>
-                            <Counter />
-                        </div>
+
+                {isPopOutOpen && selectedVariant && (
+                    <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center" onClick={handlePopOutClose}>
+                        <PopOutMenu variant={selectedVariant} onClose={handlePopOutClose} />
                     </div>
-                ))}
-
+                )}
             </div>
-
-            {isPopOutOpen && selectedVariant && (
-                <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center" onClick={handlePopOutClose}>
-                    <PopOutMenu variant={selectedVariant} onClose={handlePopOutClose} />
-                </div>
-            )}
-        </div>
+        </AuthProvider>
       </>
     );
   }
 
   
-  
+    
 
 
 export async function getServerSideProps(context) {
+    // Retrieve filtering parameters from the query string
+    // const { colorFilter, setFilter, abilityFilter, attributeFilter, typesFilter, categoryFilter, nameFilter, numberFilter, costFilter, counterFilter, powerFilter, effectFilter, triggerFilter } = context.query;
+    
     // Gets data for all the variants from the table
     const response = await fetch(`${process.env.NEXT_API_URL}/variants`)
     const data = await response.json()
@@ -337,7 +388,7 @@ export async function getServerSideProps(context) {
     const categoryResponse = await fetch(`${process.env.NEXT_API_URL}/categories`)
     const categoryData = await categoryResponse.json()
 
-    console.log("data",data)
+    // console.log("data",data)
     return {
         props: {
             data,
@@ -350,3 +401,4 @@ export async function getServerSideProps(context) {
         }
     }
 }
+
