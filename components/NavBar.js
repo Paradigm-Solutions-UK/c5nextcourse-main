@@ -1,4 +1,52 @@
-import React, { useEffect, useState, Component } from 'react';
+// import React, { useEffect, useState, Component } from 'react';
+// import FilterMyStuff from './FilterMyStuff';
+// import AuthForm from '@/components/AuthForm';
+// import firebase from './auth/firebase'; // Adjust the import path according to your file structure
+// import SignIn from '@/components/auth/SignIn';
+// import SignUp from '@/components/auth/SignUp';
+// import AuthDetails from '@/components/auth/AuthDetails';
+// import { auth } from '@/components/auth/firebase';
+// // import SignUp from '@/pages/signup';
+// import { onAuthStateChanged } from 'firebase/auth'
+// import { AuthProvider, useAuth } from '@/components/auth/AuthContext';
+
+
+
+
+// export default class NavBar extends Component {
+
+  
+
+
+//   state = {
+//         isSignInOpen: false,
+//         isSignUpOpen: false,
+//         // authUser: null,
+//       };
+
+    
+    
+//       toggleSignIn = () => {
+//         this.setState((prevState) => ({
+//           isSignInOpen: !prevState.isSignInOpen,
+//         }));
+//       };
+
+//       toggleSignUp = () => {
+//         this.setState((prevState) => ({
+//           isSignUpOpen: !prevState.isSignUpOpen,
+//         }));
+//       };
+
+      
+      
+  
+//     render() {
+//         const { isSignInOpen, isSignUpOpen, authUser } = this.state;
+//         console.log('authUser in Navbar: ', authUser)
+
+
+import React, { useEffect, useState } from 'react';
 import FilterMyStuff from './FilterMyStuff';
 import AuthForm from '@/components/AuthForm';
 import firebase from './auth/firebase'; // Adjust the import path according to your file structure
@@ -6,48 +54,41 @@ import SignIn from '@/components/auth/SignIn';
 import SignUp from '@/components/auth/SignUp';
 import AuthDetails from '@/components/auth/AuthDetails';
 import { auth } from '@/components/auth/firebase';
-// import SignUp from '@/pages/signup';
-import { onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth';
+import { useAuth } from '@/components/auth/AuthContext';
+
+const NavBar = () => {
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const { authUser } = useAuth(); // Get the authUser from the useAuth hook
+  // const [authUser, setAuthUser] = useState(null); // Uncomment this line if you want to use 'authUser' state
+
+  const toggleSignIn = () => {
+    setIsSignInOpen((prevState) => !prevState);
+  };
+
+  const toggleSignUp = () => {
+    setIsSignUpOpen((prevState) => !prevState);
+  };
 
 
-
-export default class NavBar extends Component {
-
-  
-
-
-  state = {
-        isSignInOpen: false,
-        isSignUpOpen: false,
-        authUser: null,
-      };
-
-    
-    
-      toggleSignIn = () => {
-        this.setState((prevState) => ({
-          isSignInOpen: !prevState.isSignInOpen,
-        }));
-      };
-
-      toggleSignUp = () => {
-        this.setState((prevState) => ({
-          isSignUpOpen: !prevState.isSignUpOpen,
-        }));
-      };
-
-      
-      
-  
-    render() {
-        const { isSignInOpen, isSignUpOpen, authUser } = this.state;
+  console.log('Navbar authuser uid - ',authUser)
+  // If you need to use 'authUser' state, you can fetch it using useEffect and onAuthStateChanged
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       setAuthUser(user);
+  //     } else {
+  //       setAuthUser(null);
+  //     }
+  //   });
+  //   return () => unsubscribe();
+  // }, []);
 
     
 
     return (
         <div>
-          
-          
           <nav class="bg-white dark:bg-gray-900 fixed w-full z-40 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
               {/* <div id='AdvertArea' class='p-2 relative z-4 overflow-y-auto w-auto h-12' style={{textAlign:'center'}}>
                 
@@ -65,43 +106,40 @@ export default class NavBar extends Component {
                               <a href="#" class="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
                           </li>
                           <li>
-                              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
+                              <a href="http://localhost:3000/gameRules" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Game Rules</a>
                           </li>
                           <li>
-                              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Card Library</a>
+                              <a href="http://localhost:3000/variants" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Card Library</a>
                           </li>
                           <li>
-                              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Deck Builder</a>
+                              <a href="http://localhost:3000/deckBuilder" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Deck Builder</a>
                           </li>
                           <li>
-                              <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">News</a>
+                              <a href="http://localhost:3000/news" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">News</a>
                           </li>
-                          <li>
-                            <div id='SignInButtonDiv' className="flex md:order-1" >
+                          {authUser ? null : <li>
+                          <div id='SignInButtonDiv' className="flex md:order-1" >
                                 <button
                                 id="SignInButton"
-                                onClick={this.toggleSignIn}
+                                onClick={toggleSignIn}
                                 className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                                 >
                                     Sign-In
                                 </button>
                                 
                             </div>
-                          </li>
-                          <li>
+                          </li>}
+                          {authUser ? null : <li>
                             <div id='SignUpButtonDiv' className="flex md:order-1">
                                 <button
                                 id="SignUpButton"
-                                onClick={this.toggleSignUp}
+                                onClick={toggleSignUp}
                                 className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
                                 >
                                     Sign-Up
                                 </button>
                             </div>
-                            <div className="flex md:order-1">
-
-                            </div>
-                          </li>
+                          </li>}
                           <li>
                             <AuthDetails authUser={authUser}/>
                           </li>
@@ -139,9 +177,7 @@ export default class NavBar extends Component {
                         </svg>
                     </button>
                   </div>
-                  
               </div>
-              
           </nav>
 
           {isSignInOpen && (
@@ -151,7 +187,7 @@ export default class NavBar extends Component {
                 {/* <AuthForm isSignIn={true} /> */}
                 <SignIn/>
                 <button
-                  onClick={this.toggleSignIn}
+                  onClick={toggleSignIn}
                   className="block py-2 px-4 w-full mt-4 bg-red-500 text-white rounded-md hover:bg-red-600"
                 >
                   Close
@@ -166,21 +202,16 @@ export default class NavBar extends Component {
               <SignUp/>
                 
                 <button
-                  onClick={this.toggleSignUp}
+                  onClick={toggleSignUp}
                   className="block py-2 px-4 w-full mt-4 bg-red-500 text-white rounded-md hover:bg-red-600"
                 >
                   Close
                 </button>
-                
               </div>
-              
             </div>
           )}
-
-          
-
-
         </div>
-    )
-  }
-}
+    );
+  };
+// }
+export default NavBar;

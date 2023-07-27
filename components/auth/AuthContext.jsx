@@ -1,5 +1,6 @@
 import React, { createContext,useContext, useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
+import { auth } from './firebase';
 
 // Create the AuthContext
 const AuthContext = createContext();
@@ -12,7 +13,7 @@ export function useAuth() {
 // AuthContext provider component
 export function AuthProvider({ children }) {
   const [authUser, setAuthUser] = useState('');
-  const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -21,7 +22,6 @@ export function AuthProvider({ children }) {
       } else {
         setAuthUser(null); // Set null if the user is signed out
       }
-      setLoading(false); // Set loading to false once the auth state is determined
     });
 
     // Clean up the listener when the component unmounts
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
   // AuthContext value
   const value = {
     authUser,
-    loading,
+    setAuthUser,
   };
 
   return (

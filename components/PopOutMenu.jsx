@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Counter from '@/components/Counter'
+import { useAuth } from '@/components/auth/AuthContext';
 
 
-export default function PopOutMenu({ variant }) {
+export default function PopOutMenu({ variant, onClose }) {
   
 
   const [isOpen, setIsOpen] = useState(true);
   const [showImage, setShowImage] = useState(window.innerWidth >= 640); // Initially set showImage based on screen width
+  const { authUser } = useAuth(); // Get the authUser from the useAuth hook
 
+  const handleClose = () => {
+    // setIsOpen((prevState) => !prevState)
+    onClose();
+  };
 
   console.log('Variant:', variant);
   console.log('Is Open:', isOpen);
@@ -16,6 +22,8 @@ export default function PopOutMenu({ variant }) {
       setShowImage(window.innerWidth >= 640);
     };
 
+    
+
     handleResize();
     window.addEventListener('resize', handleResize);
 
@@ -23,7 +31,7 @@ export default function PopOutMenu({ variant }) {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
+  
   // Render the data related to the selected variant
   return (
     <>
@@ -88,14 +96,15 @@ export default function PopOutMenu({ variant }) {
             )}
 
             {/* Add other info here eg counters for the cards*/}
-            <div class='p-1 w-1/4'>
+            {authUser ? <div class='p-1 w-1/4'>
                 <h2 classname='pr-6'>In Collection</h2>
-                <Counter />
-            </div>
+                <Counter variantId={variant.id} />
+            </div>  : null}
           </div>
           {showImage && (
             <div className="w-2/5">
               <img src={variant.imgSource} alt={variant.details[0].name} className="max-w-scale-down object-fill" />
+              <div><button onClick={handleClose}>Close</button></div>
             </div>
           )}
         </div>

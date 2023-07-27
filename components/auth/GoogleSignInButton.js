@@ -10,7 +10,7 @@ const GoogleSignInButton = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
         // You can access the signed-in user's information via result.user
-        console.log('Signed in:', result.user);
+        // console.log('Signed in:', result.user);
       })
       .catch((error) => {
         console.error('Error signing in:', error);

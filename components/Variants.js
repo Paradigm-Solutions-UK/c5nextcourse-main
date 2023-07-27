@@ -282,7 +282,7 @@ export default function Variants({
                           <img src={variant.imgSource} alt={variant.details[0].name} />
                         </div>
                         <div className="p-1">
-                          <Counter />
+                          <Counter variantId={variant.id} />
                         </div>
                       </div>
                   ))

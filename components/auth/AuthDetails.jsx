@@ -35,8 +35,8 @@ const AuthDetails = () => {
             console.log('Successfully Signed Out');
         })
             .catch(error => console.log(error));
-            signInElement.style.display = 'block';
-            signUpElement.style.display = 'block';
+            // signInElement.style.display = 'block';
+            // signUpElement.style.display = 'block';
     }
 
     const [userTabFilter, setUserTabFilter] = useState(0);

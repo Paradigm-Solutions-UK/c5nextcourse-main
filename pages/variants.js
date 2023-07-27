@@ -8,7 +8,6 @@ import PopOutMenu from '@/components/PopOutMenu';
 import { auth } from '@/components/auth/firebase';
 import AuthDetails from '@/components/auth/AuthDetails';
 import { onAuthStateChanged } from 'firebase/auth'
-import ToolProvider, { useTool } from '@/components/ToolContext';
 import { AuthProvider, useAuth } from '@/components/auth/AuthContext';
 
 
@@ -19,9 +18,21 @@ import { AuthProvider, useAuth } from '@/components/auth/AuthContext';
 
 
 export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) {
-    // console.log(data)
-    const { authUser, setAuthUser } = useAuth();
+   
+    return (
+        <>
+            <AuthProvider>
+                <Head>
+                    <title>Card Library</title>
+                </Head>
+                <NavBar/>
+                <Content data={data} colorData={colorData} setData={setData} abilityData={abilityData} attributeData={attributeData} typesData={typesData} categoryData={categoryData}/>
+            </AuthProvider>
+        </>
+    );
+}
 
+const Content = ({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) => {
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [isPopOutOpen, setIsPopOutOpen] = useState(false);
     
@@ -94,22 +105,25 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
     };
     
     
+    // // const checkLoggedIn = () => {
 
-    // Use useEffect to listen for changes in the authentication state
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                setAuthUser(user); // Set the user object if the user is signed in
-            } else {
-            setAuthUser(null); // Set null if the user is signed out
-        }
-        });
-
-        // Clean up the listener when the component unmounts
-        return () => unsubscribe();
-    }, []);
-
-    
+    //     // Use useEffect to listen for changes in the authentication state
+    //     useEffect(() => {
+    //         console.log('1 authUser coming up as - ',authUser)
+    //         const unsubscribe = onAuthStateChanged(auth, (user) => {
+    //             if (user) {
+    //                 setAuthUser(user); // Set the user object if the user is signed in
+    //                 console.log('2 authUser coming up as - ',authUser)
+    //             } else {
+    //             setAuthUser(null); // Set null if the user is signed out
+    //         }
+    //         });
+    //         console.log('3 authUser coming up as - ',authUser)
+    //         // Clean up the listener when the component unmounts
+    //         return () => unsubscribe();
+    //     }, []);
+    //     console.log('4 authUser coming up as - ',authUser)
+    // // }
 
     const filteredData = data.filter((variant) => {
         const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
@@ -138,6 +152,11 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
       });
 
     // console.log(filteredData);
+    
+    // const isAnyoneSignedIn = () => {
+    //     const {authUser} = useAuth()
+    //     return
+    // }
 
     const handleImageClick = (variant) => {
         setSelectedVariant(variant);
@@ -151,24 +170,23 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
     // console.log(auth.currentUser)
     
 
-    if (loading) {
-        // Show loading spinner or placeholder while checking the auth state
-        return <div>Loading...</div>;
-      }
+    // if (loading) {
+    //     // Show loading spinner or placeholder while checking the auth state
+    //     return <div>Loading...</div>;
+    //   }
     
-      if (!authUser) {
-        // User is not authenticated, show login/register UI
-        return <div>Please login or register.</div>;
-      }
+    //   if (!authUser) {
+    //     // User is not authenticated, show login/register UI
+    //     return <div>Please login or register.</div>;
+    //   }
+    const {authUser} = useAuth();
+    console.log(authUser)
 
+    // const r = useAuth()
+    // console.log('auth check',r)
     return (
-      <>
-        <AuthProvider>
-            <Head>
-                <title>Card Library</title>
-            </Head>
+        <>
             
-                <NavBar authUser={authUser}/>
             
             <div className='flex py-20 relative'>
                 <div className='sm:flex-row md:flex-row lg:flex-col xl:flex-col'>
@@ -338,7 +356,7 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
                             <div class='p-1'>
                                 
                                 {authUser ? <Counter /> : null}
-                                
+                                {/* <Counter/> */}
                             
                             </div>
                         </div>
@@ -347,19 +365,17 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
                 </div>
 
                 {isPopOutOpen && selectedVariant && (
-                    <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center" onClick={handlePopOutClose}>
-                        <PopOutMenu variant={selectedVariant} onClose={handlePopOutClose} />
+                    <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center">
+                        <AuthProvider>
+                            <PopOutMenu variant={selectedVariant} onClose={handlePopOutClose} />
+                            
+                        </AuthProvider>
                     </div>
                 )}
             </div>
-        </AuthProvider>
-      </>
-    );
-  }
-
-  
-    
-
+        </>
+    )
+}
 
 export async function getServerSideProps(context) {
     // Retrieve filtering parameters from the query string
@@ -368,6 +384,7 @@ export async function getServerSideProps(context) {
     // Gets data for all the variants from the table
     const response = await fetch(`${process.env.NEXT_API_URL}/variants`)
     const data = await response.json()
+    // const data = []
     
     //Retrieves data from the various populating tables to fill in the drop down lists for filtering
     const colorResponse = await fetch(`${process.env.NEXT_API_URL}/colors`)

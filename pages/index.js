@@ -7,7 +7,7 @@ import NavBar from '@/components/NavBar';
 import Variants from '@/components/Variants';
 import PopOutMenu from '@/components/PopOutMenu';
 import SignIn from '@/components/auth/SignIn';
-
+import { AuthProvider, useAuth } from '@/components/auth/AuthContext';
 // const inter = Inter({ subsets: ['latin'] })
 
 
