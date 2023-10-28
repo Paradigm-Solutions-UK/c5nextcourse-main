@@ -60,7 +60,7 @@ import { useAuth } from '@/components/auth/AuthContext';
 const NavBar = () => {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
-  const { authUser } = useAuth(); // Get the authUser from the useAuth hook
+  const { authUser } = useAuth() || {}; // Get the authUser from the useAuth hook
   // const [authUser, setAuthUser] = useState(null); // Uncomment this line if you want to use 'authUser' state
 
   const toggleSignIn = () => {
@@ -72,7 +72,7 @@ const NavBar = () => {
   };
 
 
-  console.log('Navbar authuser uid - ',authUser)
+  // console.log('Navbar authuser uid - ',authUser)
   // If you need to use 'authUser' state, you can fetch it using useEffect and onAuthStateChanged
   // useEffect(() => {
   //   const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -89,13 +89,13 @@ const NavBar = () => {
 
     return (
         <div>
-          <nav class="bg-white dark:bg-gray-900 fixed w-full z-40 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
+          <nav className="bg-white dark:bg-gray-900 fixed w-full z-40 top-0 left-0 border-b border-gray-200 dark:border-gray-600">
               {/* <div id='AdvertArea' class='p-2 relative z-4 overflow-y-auto w-auto h-12' style={{textAlign:'center'}}>
                 
                   <a>ADVERT GOES HERE</a>
               </div> */}
               
-              <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-3">
+              <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-3">
               <FilterMyStuff/>
               <a href="http://localhost:3000/variants" class="flex items-center">
                   <span className="self-center sm:text-Base md:text-2xl lg:text-3xl font-semibold whitespace-nowrap dark:text-white">One Piece TCG Collector Tool</span>

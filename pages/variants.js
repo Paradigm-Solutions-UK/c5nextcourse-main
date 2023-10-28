@@ -3,13 +3,22 @@ import Head from 'next/head'
 import {useState, useEffect} from 'react'
 import _ from 'lodash';
 import Counter from '@/components/Counter'
+import ChangePage from '@/components/ChangePage'
 import NavBar from '@/components/NavBar';
 import PopOutMenu from '@/components/PopOutMenu';
 import { auth } from '@/components/auth/firebase';
 import AuthDetails from '@/components/auth/AuthDetails';
 import { onAuthStateChanged } from 'firebase/auth'
-import { AuthProvider, useAuth } from '@/components/auth/AuthContext';
+import { AuthProvider, useAuth, getAuthUser } from '@/components/auth/AuthContext';
+import { parse } from 'cookie';
 
+import firebase from 'firebase/app';
+import { PrevButton } from '@/components/PrevButton';
+import { NextButton } from '@/components/NextButton';
+import { PageDisplay } from '@/components/PageDisplay';
+
+
+let page = 1;
 
 // import { useNavigate } from "react-router-dom";
 
@@ -27,6 +36,7 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
                 </Head>
                 <NavBar/>
                 <Content data={data} colorData={colorData} setData={setData} abilityData={abilityData} attributeData={attributeData} typesData={typesData} categoryData={categoryData}/>
+                {/* <div className='static p-1'><ChangePage page={page}/></div> */}
             </AuthProvider>
         </>
     );
@@ -180,7 +190,7 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
     //     return <div>Please login or register.</div>;
     //   }
     const {authUser} = useAuth();
-    console.log(authUser)
+    //console.log(authUser)
 
     // const r = useAuth()
     // console.log('auth check',r)
@@ -344,25 +354,36 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                         </div>
                     </div>
                 </div>
-                
-                <div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
-                
-                
-                    {_.sortBy(filteredData, 'id').map((variant) => (
-                        <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>
-                            <div onClick={() => handleImageClick(variant)}>
-                                <img src={variant.imgSource} alt={variant.details[0].name} />
-                            </div>
-                            <div class='p-1'>
-                                
-                                {authUser ? <Counter /> : null}
-                                {/* <Counter/> */}
-                            
-                            </div>
-                        </div>
-                    ))}
 
+                <div className='place-content-center'>
+                    
+                    {/* <div className='p-1'><ChangePage page={page}/></div> */}
+                    <div className='pb-1'><ChangePage/></div>
+                    <div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
+                    
+                    
+                        {_.sortBy(filteredData, 'id').map((variant) => (
+                            
+                            <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>   
+                                <div onClick={() => handleImageClick(variant)}>
+                                    <img src={variant.imgSource} alt={variant.details[0].name} />
+                                </div>
+                                <div class='p-1'>
+                                    
+                                    {authUser ? <Counter variantId={variant.id} quantity={variant.variant_quantity}/> : null}
+                                    {/* <Counter/> */}
+                                
+                                </div>
+                            </div>
+                        ))}
+
+                        
+                        
+                    </div>
+                    {/* <ChangePage page={page}/> */}
                 </div>
+
+                
 
                 {isPopOutOpen && selectedVariant && (
                     <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-500 bg-opacity-50 flex items-center justify-center">
@@ -372,6 +393,7 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                         </AuthProvider>
                     </div>
                 )}
+
             </div>
         </>
     )
@@ -380,10 +402,23 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
 export async function getServerSideProps(context) {
     // Retrieve filtering parameters from the query string
     // const { colorFilter, setFilter, abilityFilter, attributeFilter, typesFilter, categoryFilter, nameFilter, numberFilter, costFilter, counterFilter, powerFilter, effectFilter, triggerFilter } = context.query;
+
+    const page = parseInt(context.query.page || '1', 10); // Extract page from query
+
+    // Parse cookies from the incoming request
+    const cookies = parse(context.req.headers.cookie || '');
+
+    // Extract UID from cookie
+    const uid = cookies.firebaseUID || null; // Set to null if undefined
+    
+    console.log("uid-",uid);
+
     
     // Gets data for all the variants from the table
-    const response = await fetch(`${process.env.NEXT_API_URL}/variants`)
+    const response = await fetch(`${process.env.NEXT_API_URL}/variants?uid=${uid}&page=${page}`)
+    // console.log(`${process.env.NEXT_API_URL}/variants`,' - check env var')
     const data = await response.json()
+    // console.log(data, 'data')
     // const data = []
     
     //Retrieves data from the various populating tables to fill in the drop down lists for filtering
@@ -414,7 +449,9 @@ export async function getServerSideProps(context) {
             abilityData,
             attributeData,
             typesData,
-            categoryData
+            categoryData,
+            page,
+            authUser: uid,
         }
     }
 }

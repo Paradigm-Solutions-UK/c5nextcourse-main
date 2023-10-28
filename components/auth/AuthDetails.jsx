@@ -62,7 +62,7 @@ const AuthDetails = () => {
         {authUser ? <>
             <div>
                 <a onClick={adjustUserTabArea}>
-                    <img className='flex rounded-full h-10' src={authUser.photoURL} alt={authUser.email}/>
+                    <img className='flex rounded-full h-8' src={authUser.photoURL} alt={authUser.email}/>
                 </a>
             </div>
             <div id='UserTab' style={{display:'none'}}>

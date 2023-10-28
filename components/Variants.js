@@ -6,8 +6,11 @@ import NavBar from '@/components/NavBar';
 // import { useNavigate } from "react-router-dom";
 import PopOutMenu from '@/components/PopOutMenu';
 // import cardColors from '@/data/card_colors';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import { useAuth } from '@/components/auth/AuthContext';
 
-const PAGE_SIZE = 120; // Set the number of items per page here
+const PAGE_SIZE = 60; // Set the number of items per page here
 
 export default function Variants({
   data,
@@ -113,6 +116,8 @@ export default function Variants({
   useEffect(() => {
     setLoading(true);
   }, [currentPage]);
+
+  console.log(variant, 'variant - 2')
   
     return (
       <>
@@ -300,8 +305,12 @@ export default function Variants({
   }
 
   export async function getServerSideProps(context) {
-    const { page = 1, pageSize = 120 } = context.query;
-  
+    const { page = 1, pageSize = 60 } = context.query;
+    // Get the current user
+    const user = firebase.auth().currentUser;
+
+    // Get the user's UID
+    const uid = user ? user.uid : null;
     // Calculate the offset to fetch data based on the current page and page size
     const offset = (page - 1) * pageSize;
   
@@ -328,7 +337,7 @@ export default function Variants({
     const categoryResponse = await fetch(`${process.env.NEXT_API_URL}/categories`)
     const categoryData = await categoryResponse.json()
   
-    console.log("data",data)
+    console.log("authUser: uid", uid)
     return {
         props: {
             data,
@@ -340,6 +349,7 @@ export default function Variants({
             categoryData,
             currentPage: parseInt(page),
             totalPages: Math.ceil(data.totalCount / pageSize),
+            authUser: uid,
         }
     }
   }

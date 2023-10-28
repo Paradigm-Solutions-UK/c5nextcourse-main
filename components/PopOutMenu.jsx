@@ -15,8 +15,8 @@ export default function PopOutMenu({ variant, onClose }) {
     onClose();
   };
 
-  console.log('Variant:', variant);
-  console.log('Is Open:', isOpen);
+  // console.log('Variant:', variant);
+  // console.log('Is Open:', isOpen);
   useEffect(() => {
     const handleResize = () => {
       setShowImage(window.innerWidth >= 640);
@@ -33,10 +33,12 @@ export default function PopOutMenu({ variant, onClose }) {
   }, []);
   
   // Render the data related to the selected variant
+  console.log(variant, 'variant - 1')
   return (
     <>
       {isOpen && (
         <div className="p-4 rounded-lg flex lg:w-3/5 lg:h-60vh xl:w-3/5 xl:h-60vh overflow-auto bg-sky-500/100" >
+          <div><button className='rounded-full h-6 w-6' style={{ border: '1px solid red', backgroundColor: 'red', color: 'white' }} onClick={handleClose}>X</button></div>
           <div className={` text-white w-full pr-4' : ''}`}>
             <h2 className="p-2">
                 <b>Name:</b> {variant.details[0].name}
@@ -98,13 +100,14 @@ export default function PopOutMenu({ variant, onClose }) {
             {/* Add other info here eg counters for the cards*/}
             {authUser ? <div class='p-1 w-1/4'>
                 <h2 classname='pr-6'>In Collection</h2>
-                <Counter variantId={variant.id} />
+                <Counter variantId={variant.id} quantity={variant.variant_quantity}/>
             </div>  : null}
+            
           </div>
           {showImage && (
             <div className="w-2/5">
               <img src={variant.imgSource} alt={variant.details[0].name} className="max-w-scale-down object-fill" />
-              <div><button onClick={handleClose}>Close</button></div>
+              
             </div>
           )}
         </div>

@@ -1,44 +1,37 @@
 import {useState, useEffect, useRef} from 'react'
 import { useAuth } from '@/components/auth/AuthContext';
 
-export default function Counter({ variantId }) {
-  const [count, setCount] = useState(0)
+export default function Counter({ variantId, quantity }) {
+  const [count, setCount] = useState(quantity||0)
   const [apiLoading, setApiLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState(null)
-  const { authUser } = useAuth()
-  
-  function increment() {
-    setCount(count + 1);
-  }
-  
-  function decrement() {
-    setCount(count - 1);
-  }
+  const { authUser } = useAuth() || {}
+  // console.log(variantId, variantId)
+  // console.log(quantity, 'quantity')
 
-  const prevCountRef = useRef(null)
-  useEffect(() => {
-    // console.log(authUser,'authUser')
+  const submitChange = (newCount) => {
     const { accessToken, uid } = authUser
     // actually create api
     // maybe set state for loading
     // block counter if loading / cancel current request
-    if (!apiLoading && (!prevCountRef.current || prevCountRef.current !== count)) {
+    if (!apiLoading) {
       setErrorMsg(null)
 
       setApiLoading(true)
       // console.log(`${process.env.NEXT_API_URL}/api/updateVariantQuantity`, 'ddd')
-      // console.log(`http://127.0.0.1:8000/api/updateVariantQuantity`, 'ddd')
+      console.log(`http://127.0.0.1:8000/api/updateVariantQuantity`, 'ddd')
       
-      fetch(`${process.env.NEXT_API_URL}/updateVariantQuantity`, {
+      // fetch(`http://127.0.0.1:8000/api/updateVariantQuantity`, {
+      fetch(`http://127.0.0.1:8000/updateVariantQuantity`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`
         },
         body: JSON.stringify({
-          uid: uid,
-          variantId,
-          quantity: count,
+          userID: uid,
+          variant_id: variantId,
+          variant_quantity: newCount,
         }),
       }).then(response => {
         if (!response.ok) {
@@ -48,24 +41,38 @@ export default function Counter({ variantId }) {
         }
           
         setApiLoading(false)
+        setCount(newCount)
         // Optional: You can handle the response here if needed.
       }).catch(error => {
         setApiLoading(false)
         setErrorMsg(error.message)
         console.error(error);
       });
-      
     }
-    prevCountRef.current = count
-  }, [count])
+  }
+  
+  function increment() {
+    submitChange(count + 1);
+  }
+  
+  function decrement() {
+    submitChange(count - 1);
+  }
+
+  // const prevCountRef = useRef(null)
+  // useEffect(() => {
+  //   // console.log(authUser,'authUser')
+
+  //   prevCountRef.current = count
+  // }, [count])
   
   return (
       <div>
         {errorMsg ? <span>{errorMsg}</span> : null}
         <div className='flex justify-between items-center' style={{ alignItems: 'center', height: '24px' }}>
-          <button class='rounded' onClick={decrement} style={{ width: '50px', height: '24px', border: '1px solid red', backgroundColor: 'red', color: 'white' }} disabled={apiLoading}>-</button>
+          <button className='rounded' onClick={decrement} style={{ width: '50px', height: '24px', border: '1px solid red', backgroundColor: 'red', color: 'white' }} disabled={apiLoading}>-</button>
           <span style={{ flex: 1, height: '24px', border: '1px solid white', backgroundColor: 'white', color: 'black', textAlign: 'center' }}>{count}</span>
-          <button class='rounded' onClick={increment} style={{ width: '50px', height: '24px', border: '1px solid green', backgroundColor: 'green', color: 'white' }} disabled={apiLoading}>+</button>
+          <button className='rounded' onClick={increment} style={{ width: '50px', height: '24px', border: '1px solid green', backgroundColor: 'green', color: 'white' }} disabled={apiLoading}>+</button>
         </div>
       </div>
     );
