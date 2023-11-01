@@ -19,7 +19,7 @@ import { PageDisplay } from '@/components/PageDisplay';
 
 
 let page = 1;
-
+let pageSize = 30;
 // import { useNavigate } from "react-router-dom";
 
 // import cardColors from '@/data/card_colors';
@@ -359,7 +359,7 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                     
                     {/* <div className='p-1'><ChangePage page={page}/></div> */}
                     <div className='pb-1'><ChangePage/></div>
-                    <div className='grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
+                    <div className='grid grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
                     
                     
                         {_.sortBy(filteredData, 'id').map((variant) => (
@@ -404,6 +404,7 @@ export async function getServerSideProps(context) {
     // const { colorFilter, setFilter, abilityFilter, attributeFilter, typesFilter, categoryFilter, nameFilter, numberFilter, costFilter, counterFilter, powerFilter, effectFilter, triggerFilter } = context.query;
 
     const page = parseInt(context.query.page || '1', 10); // Extract page from query
+    // const pageSize = parseInt(context.query.pageSize || '30', 10); // Extract page from query
 
     // Parse cookies from the incoming request
     const cookies = parse(context.req.headers.cookie || '');
@@ -451,6 +452,7 @@ export async function getServerSideProps(context) {
             typesData,
             categoryData,
             page,
+            // pageSize,
             authUser: uid,
         }
     }
