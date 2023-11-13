@@ -36,8 +36,6 @@ export default function ChangePage({ initialPage = 1, initialPageSize = 30 }) {
       changeURL(newPageSize);
     
   }
-
-
   
   return (
       <div>
@@ -51,5 +49,3 @@ export default function ChangePage({ initialPage = 1, initialPageSize = 30 }) {
       </div>
     );
 }
-
-

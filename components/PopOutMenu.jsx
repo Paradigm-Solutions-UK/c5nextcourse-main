@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Counter from '@/components/Counter'
 import { useAuth } from '@/components/auth/AuthContext';
+import CounterPreRelease from './CounterPreRelease';
 
 
 export default function PopOutMenu({ variant, onClose }) {
@@ -37,9 +38,9 @@ export default function PopOutMenu({ variant, onClose }) {
   return (
     <>
       {isOpen && (
-        <div className="p-4 rounded-lg flex lg:w-3/5 lg:h-60vh xl:w-3/5 xl:h-60vh overflow-auto bg-sky-500/100" >
+        <div className="p-4 rounded-lg flex lg:w-4/5 lg:h-70vh xl:w-4/5 xl:h-70vh overflow-auto bg-[url('/assets/popout-bg.jpg')] bg-cover bg-center">
           <div><button className='rounded-full h-6 w-6' style={{ border: '1px solid red', backgroundColor: 'red', color: 'white' }} onClick={handleClose}>X</button></div>
-          <div className={` text-white w-full pr-4' : ''}`}>
+          <div className={` text-black w-full pr-4 text-shadow-default' : ''}`}>  
             <h2 className="p-2">
                 <b>Name:</b> {variant.details[0].name}
             </h2>
@@ -99,15 +100,22 @@ export default function PopOutMenu({ variant, onClose }) {
 
             {/* Add other info here eg counters for the cards*/}
             {authUser ? <div class='p-1 w-1/4'>
-                <h2 classname='pr-6'>In Collection</h2>
-                <Counter variantId={variant.id} quantity={variant.variant_quantity}/>
+                <h2 classname='pl-6'>
+                  <b>In Collection</b>
+                    
+                  <h3 class='p-6'>
+                    <div class="flex flex-row space-x-4">
+                      <p>Regular <Counter variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/></p>
+                      <p>Pre-Release <CounterPreRelease variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/></p>
+                    </div>
+                  </h3>
+                    
+                </h2>
             </div>  : null}
-            
           </div>
           {showImage && (
             <div className="w-2/5">
               <img src={variant.imgSource} alt={variant.details[0].name} className="max-w-scale-down object-fill" />
-              
             </div>
           )}
         </div>

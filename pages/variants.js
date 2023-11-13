@@ -11,6 +11,7 @@ import AuthDetails from '@/components/auth/AuthDetails';
 import { onAuthStateChanged } from 'firebase/auth'
 import { AuthProvider, useAuth, getAuthUser } from '@/components/auth/AuthContext';
 import { parse } from 'cookie';
+// import { useRouter } from 'next/router';
 
 import firebase from 'firebase/app';
 import { PrevButton } from '@/components/PrevButton';
@@ -20,6 +21,7 @@ import { PageDisplay } from '@/components/PageDisplay';
 
 let page = 1;
 let pageSize = 30;
+let changeUser = 0;
 // import { useNavigate } from "react-router-dom";
 
 // import cardColors from '@/data/card_colors';
@@ -45,6 +47,7 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
 const Content = ({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) => {
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [isPopOutOpen, setIsPopOutOpen] = useState(false);
+    // const router = useRouter(); // Initialize the router
     
     
     const [colorFilter, setColorFilter] = useState('All');
@@ -114,26 +117,6 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
         setPowerFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
     };
     
-    
-    // // const checkLoggedIn = () => {
-
-    //     // Use useEffect to listen for changes in the authentication state
-    //     useEffect(() => {
-    //         console.log('1 authUser coming up as - ',authUser)
-    //         const unsubscribe = onAuthStateChanged(auth, (user) => {
-    //             if (user) {
-    //                 setAuthUser(user); // Set the user object if the user is signed in
-    //                 console.log('2 authUser coming up as - ',authUser)
-    //             } else {
-    //             setAuthUser(null); // Set null if the user is signed out
-    //         }
-    //         });
-    //         console.log('3 authUser coming up as - ',authUser)
-    //         // Clean up the listener when the component unmounts
-    //         return () => unsubscribe();
-    //     }, []);
-    //     console.log('4 authUser coming up as - ',authUser)
-    // // }
 
     const filteredData = data.filter((variant) => {
         const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
@@ -161,12 +144,6 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
         
       });
 
-    // console.log(filteredData);
-    
-    // const isAnyoneSignedIn = () => {
-    //     const {authUser} = useAuth()
-    //     return
-    // }
 
     const handleImageClick = (variant) => {
         setSelectedVariant(variant);
@@ -189,15 +166,12 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
     //     // User is not authenticated, show login/register UI
     //     return <div>Please login or register.</div>;
     //   }
+    
+    
     const {authUser} = useAuth();
-    //console.log(authUser)
 
-    // const r = useAuth()
-    // console.log('auth check',r)
     return (
         <>
-            
-            
             <div className='flex py-20 relative'>
                 <div className='sm:flex-row md:flex-row lg:flex-col xl:flex-col'>
                     {/* <FilterMyStuff/> */}
@@ -274,7 +248,6 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                                 />
                             </div>
                         
-
                             <div class='py-1'>
                                 <label class='p-3 font-semibold' htmlFor='counterFilter'>Filter by Counter:</label>
                                 <select className="border border-gray-300 rounded px-2 py-1 p-1 text-center" id='counterFilter' value={counterFilter} onChange={handleCounterFilterChange}>
@@ -282,11 +255,8 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                                     <option class='text-left' value='0'>None</option>
                                     <option class='text-left' value='1000'>+1000</option>
                                     <option class='text-left' value='2000'>+2000</option>
-                                    
                                 </select>
-                                
                             </div>
-
 
                             <div class='py-1'>
                                 <label class='p-3 font-semibold' htmlFor='categoryFilter'>Filter by Category:</label>
@@ -358,7 +328,7 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                 <div className='place-content-center'>
                     
                     {/* <div className='p-1'><ChangePage page={page}/></div> */}
-                    <div className='pb-1'><ChangePage/></div>
+                    <div className='pb-2 pr-2 pl-1'><ChangePage/></div>
                     <div className='grid grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
                     
                     
@@ -417,7 +387,49 @@ export async function getServerSideProps(context) {
     
     // Gets data for all the variants from the table
     const response = await fetch(`${process.env.NEXT_API_URL}/variants?uid=${uid}&page=${page}`)
-    // console.log(`${process.env.NEXT_API_URL}/variants`,' - check env var')
+    
+    // // Extract filters from the query
+    // const {
+    //     page,
+    //     colorFilter,
+    //     setFilter,
+    //     abilityFilter,
+    //     attributeFilter,
+    //     typesFilter,
+    //     categoryFilter,
+    //     nameFilter,
+    //     numberFilter,
+    //     costFilter,
+    //     counterFilter,
+    //     powerFilter,
+    //     effectFilter,
+    //     triggerFilter
+    // } = context.query;
+
+    // const filters = {
+    //     color: colorFilter,
+    //     set: setFilter,
+    //     ability: abilityFilter,
+    //     attribute: attributeFilter,
+    //     type: typesFilter,
+    //     category: categoryFilter,
+    //     name: nameFilter,
+    //     number: numberFilter,
+    //     cost: costFilter,
+    //     counter: counterFilter,
+    //     power: powerFilter,
+    //     effect: effectFilter,
+    //     trigger: triggerFilter
+    // };
+
+    // // Parse cookies to get the UID
+    // const cookies = parse(context.req.headers.cookie || '');
+    // const uid = cookies.firebaseUID || null;
+
+    // // Build the URL with query parameters for filtering
+    // const queryParams = new URLSearchParams({ ...filters, uid, page }).toString();
+    // const response = await fetch(`${process.env.NEXT_API_URL}/variants?${queryParams}`);
+
     const data = await response.json()
     // console.log(data, 'data')
     // const data = []

@@ -2,6 +2,7 @@ import React, { createContext,useContext, useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from './firebase';
 import Cookies from 'js-cookie';
+import { useRouter } from "next/router";
 
 // Create the AuthContext
 const AuthContext = createContext();
