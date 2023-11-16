@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Counter from '@/components/Counter'
 import { useAuth } from '@/components/auth/AuthContext';
 import CounterPreRelease from './CounterPreRelease';
+import CounterJudge from './CounterJudge';
+import CounterWinner from './CounterWinner';
 
 
 export default function PopOutMenu({ variant, onClose }) {
@@ -105,8 +107,23 @@ export default function PopOutMenu({ variant, onClose }) {
                     
                   <h3 class='p-6'>
                     <div class="flex flex-row space-x-4">
-                      <p>Regular <Counter variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/></p>
-                      <p>Pre-Release <CounterPreRelease variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/></p>
+                      <div>
+                        <p>Regular</p>
+                        <Counter variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/>
+                      </div>
+                      {variant.hasPreReleaseVariant == true ? <div>
+                        <p>Pre-Release Stamp</p>
+                        <CounterPreRelease variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/>
+                      </div> : null}
+                      
+                      {variant.hasJudgeVariant == true ? <div>
+                        <p>Judge Stamp</p>
+                        <CounterJudge variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/>
+                      </div> : null}
+                      {variant.hasWinnerVariant == true ? <div>
+                        <p>Winner Stamp</p>
+                        <CounterWinner variantId={variant.id} quantity={variant.variant_quantity} prQuantity={variant.preRelease_quantity} judgeQuantity={variant.judge_quantity} winnerQuantity={variant.winner_quantity}/>
+                      </div> : null}
                     </div>
                   </h3>
                     

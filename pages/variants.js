@@ -11,7 +11,7 @@ import AuthDetails from '@/components/auth/AuthDetails';
 import { onAuthStateChanged } from 'firebase/auth'
 import { AuthProvider, useAuth, getAuthUser } from '@/components/auth/AuthContext';
 import { parse } from 'cookie';
-// import { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 import firebase from 'firebase/app';
 import { PrevButton } from '@/components/PrevButton';
@@ -47,7 +47,7 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
 const Content = ({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) => {
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [isPopOutOpen, setIsPopOutOpen] = useState(false);
-    // const router = useRouter(); // Initialize the router
+    const router = useRouter(); // Initialize the router
     
     
     const [colorFilter, setColorFilter] = useState('All');
@@ -87,6 +87,7 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
 
     const handleCategoryFilterChange = (e) => {
         setCategoryFilter(e.target.value);
+        console.log(e.target.value);
     };
 
     const handleNameFilterChange = (e) => {
@@ -116,33 +117,59 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
     const handlePowerFilterChange = (e) => {
         setPowerFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
     };
+
+    const handleFilter = () => {
+        // Construct the query parameters
+        const queryParams = new URLSearchParams({
+            page: '1', // Reset to page 1 or keep the current page
+            color: colorFilter,
+            set: setFilter,
+            ability: abilityFilter,
+            attribute: attributeFilter,
+            type: typesFilter,
+            category: categoryFilter,
+            name: nameFilter,
+            number: numberFilter,
+            cost: costFilter,
+            counter: counterFilter,
+            power: powerFilter,
+            effect: effectFilter,
+            trigger: triggerFilter
+        });
+
+        // Navigate to the same page with new query parameters
+        router.push({
+            pathname: router.pathname,
+            query: queryParams.toString(),
+        });
+    };
     
 
-    const filteredData = data.filter((variant) => {
-        const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
-        const setMatches = setFilter === 'All' || variant.details[0].set.some((set) => set.setNumber === setFilter);
-        const abilityMatches = abilityFilter === 'All' || variant.details[0].abilities.some((ability) => ability.name === abilityFilter);
-        const attributeMatches = attributeFilter === 'All' || variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter);
-        const typesMatches = typesFilter === 'All' || variant.details[0].types.some((types) => types.name === typesFilter);
-        const categoryMatches = categoryFilter === 'All' || variant.details[0].category.some((category) => category.name === categoryFilter);
-        const nameMatches = nameFilter === '' || variant.details[0].name.toLowerCase().includes(nameFilter);
-        const effectMatches = effectFilter === '' || variant.details[0].effect.toLowerCase().includes(effectFilter);
-        const triggerMatches = triggerFilter === '' || variant.details[0].trigger.toLowerCase().includes(triggerFilter);
-        const numberMatches =
-            numberFilter === '' ||
-            (typeof numberFilter === 'number' && variant.details[0].number === numberFilter);
-        const costMatches =
-            costFilter === '' ||
-            (typeof costFilter === 'number' && variant.details[0].cost_life === costFilter);
-        const powerMatches =
-            powerFilter === '' ||
-            (typeof powerFilter === 'number' && variant.details[0].power === powerFilter);
+    // const filteredData = data.filter((variant) => {
+    //     const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
+    //     const setMatches = setFilter === 'All' || variant.details[0].set.some((set) => set.setNumber === setFilter);
+    //     const abilityMatches = abilityFilter === 'All' || variant.details[0].abilities.some((ability) => ability.name === abilityFilter);
+    //     const attributeMatches = attributeFilter === 'All' || variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter);
+    //     const typesMatches = typesFilter === 'All' || variant.details[0].types.some((types) => types.name === typesFilter);
+    //     const categoryMatches = categoryFilter === 'All' || variant.details[0].category.some((category) => category.name === categoryFilter);
+    //     const nameMatches = nameFilter === '' || variant.details[0].name.toLowerCase().includes(nameFilter);
+    //     const effectMatches = effectFilter === '' || variant.details[0].effect.toLowerCase().includes(effectFilter);
+    //     const triggerMatches = triggerFilter === '' || variant.details[0].trigger.toLowerCase().includes(triggerFilter);
+    //     const numberMatches =
+    //         numberFilter === '' ||
+    //         (typeof numberFilter === 'number' && variant.details[0].number === numberFilter);
+    //     const costMatches =
+    //         costFilter === '' ||
+    //         (typeof costFilter === 'number' && variant.details[0].cost_life === costFilter);
+    //     const powerMatches =
+    //         powerFilter === '' ||
+    //         (typeof powerFilter === 'number' && variant.details[0].power === powerFilter);
             
-        const counterMatches = counterFilter === '' || variant.details[0].counter === counterFilter;
+    //     const counterMatches = counterFilter === '' || variant.details[0].counter === counterFilter;
       
-        return colorMatches && setMatches && abilityMatches && attributeMatches && typesMatches && categoryMatches && nameMatches && numberMatches && costMatches && counterMatches && powerMatches && effectMatches && triggerMatches;
+    //     return colorMatches && setMatches && abilityMatches && attributeMatches && typesMatches && categoryMatches && nameMatches && numberMatches && costMatches && counterMatches && powerMatches && effectMatches && triggerMatches;
         
-      });
+    //   });
 
 
     const handleImageClick = (variant) => {
@@ -321,6 +348,8 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                                     className="border border-gray-300 rounded px-2 py-1 p-1 text-center"
                                 />
                             </div>
+
+                            <button onClick={handleFilter}>Filter</button>
                         </div>
                     </div>
                 </div>
@@ -332,11 +361,12 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
                     <div className='grid grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2 p-1 z-0 overflow-y-auto max-h-screen' id='cardDataArea' >
                     
                     
-                        {_.sortBy(filteredData, 'id').map((variant) => (
+                        {_.sortBy(data, 'id').map((variant) => (
                             
                             <div key={variant.id} className='grid-auto-rows: min-content' style={{ alignItems: 'start' }}>   
                                 <div onClick={() => handleImageClick(variant)}>
-                                    <img src={variant.imgSource} alt={variant.details[0].name} />
+                                    {/* <img src={variant.imgSource} alt={variant.details[0].name} /> */}
+                                    <img src={variant.imgSource} />
                                 </div>
                                 <div class='p-1'>
                                     
@@ -370,69 +400,52 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
 }
 
 export async function getServerSideProps(context) {
-    // Retrieve filtering parameters from the query string
-    // const { colorFilter, setFilter, abilityFilter, attributeFilter, typesFilter, categoryFilter, nameFilter, numberFilter, costFilter, counterFilter, powerFilter, effectFilter, triggerFilter } = context.query;
-
-    const page = parseInt(context.query.page || '1', 10); // Extract page from query
-    // const pageSize = parseInt(context.query.pageSize || '30', 10); // Extract page from query
+    // Extract page and filter parameters from the query
+    const {
+        page = '1',
+        colorFilter = 'All',
+        setFilter = 'All',
+        abilityFilter = 'All',
+        attributeFilter = 'All',
+        typesFilter = 'All',
+        categoryFilter = 'All',
+        nameFilter = '',
+        numberFilter = '',
+        costFilter = '',
+        counterFilter = '',
+        powerFilter = '',
+        effectFilter = '',
+        triggerFilter = ''
+    } = context.query;
 
     // Parse cookies from the incoming request
     const cookies = parse(context.req.headers.cookie || '');
-
-    // Extract UID from cookie
     const uid = cookies.firebaseUID || null; // Set to null if undefined
-    
-    console.log("uid-",uid);
 
-    
-    // Gets data for all the variants from the table
-    const response = await fetch(`${process.env.NEXT_API_URL}/variants?uid=${uid}&page=${page}`)
-    
-    // // Extract filters from the query
-    // const {
-    //     page,
-    //     colorFilter,
-    //     setFilter,
-    //     abilityFilter,
-    //     attributeFilter,
-    //     typesFilter,
-    //     categoryFilter,
-    //     nameFilter,
-    //     numberFilter,
-    //     costFilter,
-    //     counterFilter,
-    //     powerFilter,
-    //     effectFilter,
-    //     triggerFilter
-    // } = context.query;
+    // Construct the query parameters
+    const queryParams = new URLSearchParams({
+        uid,
+        page,
+        color: colorFilter,
+        set: setFilter,
+        ability: abilityFilter,
+        attribute: attributeFilter,
+        type: typesFilter,
+        category: categoryFilter,
+        name: nameFilter,
+        number: numberFilter,
+        cost: costFilter,
+        counter: counterFilter,
+        power: powerFilter,
+        effect: effectFilter,
+        trigger: triggerFilter
+    }).toString();
 
-    // const filters = {
-    //     color: colorFilter,
-    //     set: setFilter,
-    //     ability: abilityFilter,
-    //     attribute: attributeFilter,
-    //     type: typesFilter,
-    //     category: categoryFilter,
-    //     name: nameFilter,
-    //     number: numberFilter,
-    //     cost: costFilter,
-    //     counter: counterFilter,
-    //     power: powerFilter,
-    //     effect: effectFilter,
-    //     trigger: triggerFilter
-    // };
+    console.log('QPs',queryParams)
 
-    // // Parse cookies to get the UID
-    // const cookies = parse(context.req.headers.cookie || '');
-    // const uid = cookies.firebaseUID || null;
-
-    // // Build the URL with query parameters for filtering
-    // const queryParams = new URLSearchParams({ ...filters, uid, page }).toString();
-    // const response = await fetch(`${process.env.NEXT_API_URL}/variants?${queryParams}`);
-
-    const data = await response.json()
-    // console.log(data, 'data')
-    // const data = []
+    // Fetch data with filters applied
+    const response = await fetch(`${process.env.NEXT_API_URL}/variants?${queryParams}`);
+    const data = await response.json();
     
     //Retrieves data from the various populating tables to fill in the drop down lists for filtering
     const colorResponse = await fetch(`${process.env.NEXT_API_URL}/colors`)
