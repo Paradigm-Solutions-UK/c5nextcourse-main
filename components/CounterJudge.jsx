@@ -1,13 +1,11 @@
 import {useState, useEffect, useRef} from 'react'
 import { useAuth } from '@/components/auth/AuthContext';
 
-export default function Counter({ variantId, quantity, prQuantity, judgeQuantity, winnerQuantity }) {
-  const [count, setCount] = useState(quantity||0)
+export default function CounterJudge({ variantId, quantity, prQuantity, judgeQuantity, winnerQuantity }) {
+  const [count, setCount] = useState(judgeQuantity||0)
   const [apiLoading, setApiLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState(null)
   const { authUser } = useAuth() || {}
-  // console.log(variantId, variantId)
-  // console.log(quantity, 'quantity')
 
   const submitChange = (newCount) => {
     const { accessToken, uid } = authUser
@@ -31,9 +29,9 @@ export default function Counter({ variantId, quantity, prQuantity, judgeQuantity
         body: JSON.stringify({
           userID: uid,
           variant_id: variantId,
-          variant_quantity: newCount,
+          variant_quantity:quantity,
           preRelease_quantity: prQuantity,
-          judge_quantity: judgeQuantity,
+          judge_quantity: newCount,
           winner_quantity: winnerQuantity,
         }),
       }).then(response => {
@@ -63,15 +61,15 @@ export default function Counter({ variantId, quantity, prQuantity, judgeQuantity
   function decrement() {
     submitChange(count - 1);
   }
-  
+
   return (
-      <div>
-        {errorMsg ? <span>{errorMsg}</span> : null}
-        <div className='flex justify-between items-center' style={{ alignItems: 'center', height: '24px' }}>
-          <button className='rounded' onClick={decrement} style={{ width: '50px', height: '24px', border: '1px solid red', backgroundColor: 'red', color: 'white' }} disabled={apiLoading}>-</button>
-          <span style={{ flex: 1, minWidth: '50px', height: '24px', border: '1px solid white', backgroundColor: 'white', color: 'black', textAlign: 'center' }}>{count}</span>
-          <button className='rounded' onClick={increment} style={{ width: '50px', height: '24px', border: '1px solid green', backgroundColor: 'green', color: 'white' }} disabled={apiLoading}>+</button>
-        </div>
+    <div>
+      {errorMsg ? <span>{errorMsg}</span> : null}
+      <div className='flex justify-between items-center' style={{ alignItems: 'center', height: '24px' }}>
+        <button className='rounded' onClick={decrement} style={{ width: '50px', height: '24px', border: '1px solid red', backgroundColor: 'red', color: 'white' }} disabled={apiLoading}>-</button>
+        <span style={{ flex: 1, minWidth: '50px', height: '24px', border: '1px solid white', backgroundColor: 'white', color: 'black', textAlign: 'center' }}>{count}</span>
+        <button className='rounded' onClick={increment} style={{ width: '50px', height: '24px', border: '1px solid green', backgroundColor: 'green', color: 'white' }} disabled={apiLoading}>+</button>
       </div>
-    );
+    </div>
+  );
 }

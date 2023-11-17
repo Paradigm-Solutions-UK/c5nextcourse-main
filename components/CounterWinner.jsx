@@ -1,13 +1,11 @@
 import {useState, useEffect, useRef} from 'react'
 import { useAuth } from '@/components/auth/AuthContext';
 
-export default function Counter({ variantId, quantity, prQuantity, judgeQuantity, winnerQuantity }) {
-  const [count, setCount] = useState(quantity||0)
+export default function CounterWinner({ variantId, quantity, prQuantity, judgeQuantity, winnerQuantity }) {
+  const [count, setCount] = useState(winnerQuantity||0)
   const [apiLoading, setApiLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState(null)
   const { authUser } = useAuth() || {}
-  // console.log(variantId, variantId)
-  // console.log(quantity, 'quantity')
 
   const submitChange = (newCount) => {
     const { accessToken, uid } = authUser
@@ -31,10 +29,10 @@ export default function Counter({ variantId, quantity, prQuantity, judgeQuantity
         body: JSON.stringify({
           userID: uid,
           variant_id: variantId,
-          variant_quantity: newCount,
+          variant_quantity:quantity,
           preRelease_quantity: prQuantity,
           judge_quantity: judgeQuantity,
-          winner_quantity: winnerQuantity,
+          winner_quantity: newCount,
         }),
       }).then(response => {
         if (!response.ok) {
@@ -63,6 +61,8 @@ export default function Counter({ variantId, quantity, prQuantity, judgeQuantity
   function decrement() {
     submitChange(count - 1);
   }
+
+
   
   return (
       <div>
