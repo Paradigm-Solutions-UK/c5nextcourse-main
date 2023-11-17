@@ -399,30 +399,57 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
     )
 }
 
+const replaceEmptyStr = (str, defaultVal) => {
+    console.log(str, 'str')
+    console.log(defaultVal, 'defaultVal')
+    console.log(typeof str === 'string' && str.trim() === '' ? defaultVal : str, 'res')
+    return typeof str === 'string' && str.trim() === '' ? defaultVal : str
+}
+
 export async function getServerSideProps(context) {
     // Extract page and filter parameters from the query
-    const {
-        page = '1',
-        colorFilter = 'All',
-        setFilter = 'All',
-        abilityFilter = 'All',
-        attributeFilter = 'All',
-        typesFilter = 'All',
-        categoryFilter = 'All',
-        nameFilter = '',
-        numberFilter = '',
-        costFilter = '',
-        counterFilter = '',
-        powerFilter = '',
-        effectFilter = '',
-        triggerFilter = ''
+    let {
+        page,
+        color: colorFilter,
+        set: setFilter,
+        ability: abilityFilter,
+        attribute: attributeFilter,
+        type: typesFilter,
+        category: categoryFilter,
+        name: nameFilter,
+        number: numberFilter,
+        cost: costFilter,
+        counter: counterFilter,
+        power: powerFilter,
+        effect: effectFilter,
+        trigger: triggerFilter
     } = context.query;
+
+    page = page||'1'
+    colorFilter = colorFilter||'All'
+    setFilter = setFilter||'All'
+    abilityFilter = abilityFilter||'All'
+    attributeFilter = attributeFilter||'All'
+    typesFilter = typesFilter||'All'
+    categoryFilter = categoryFilter||'All'
+    nameFilter = nameFilter||''
+    numberFilter = numberFilter||0
+    numberFilter = isNaN(numberFilter) ? 0 : numberFilter
+    costFilter = costFilter||0
+    costFilter = isNaN(costFilter) ? 0 : costFilter
+    counterFilter = counterFilter||0
+    counterFilter = isNaN(counterFilter) ? 0 : counterFilter
+    powerFilter = powerFilter||0
+    powerFilter = isNaN(powerFilter) ? 0 : powerFilter
+    effectFilter = effectFilter||''
+    triggerFilter = triggerFilter||''
 
     // Parse cookies from the incoming request
     const cookies = parse(context.req.headers.cookie || '');
     const uid = cookies.firebaseUID || null; // Set to null if undefined
 
     // Construct the query parameters
+    // number, cost, counter, power are required integers, you passed an empty string
     const queryParams = new URLSearchParams({
         uid,
         page,
@@ -446,6 +473,9 @@ export async function getServerSideProps(context) {
     // Fetch data with filters applied
     const response = await fetch(`${process.env.NEXT_API_URL}/variants?${queryParams}`);
     const data = await response.json();
+
+    // THIS holds info about errors you receive
+    console.log(data.detail, 'data')
     
     //Retrieves data from the various populating tables to fill in the drop down lists for filtering
     const colorResponse = await fetch(`${process.env.NEXT_API_URL}/colors`)

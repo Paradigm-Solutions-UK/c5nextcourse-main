@@ -313,7 +313,7 @@ export default function Variants({
     const uid = user ? user.uid : null;
     // Calculate the offset to fetch data based on the current page and page size
     const offset = (page - 1) * pageSize;
-  
+
     // Fetch data for the current page and page size from the table
     const response = await fetch(`${process.env.NEXT_API_URL}/variants?offset=${offset}&pageSize=${pageSize}`);
     const data = await response.json();
