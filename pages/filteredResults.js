@@ -22,13 +22,11 @@ import { PageDisplay } from '@/components/PageDisplay';
 let page = 1;
 let pageSize = 30;
 let changeUser = 0;
-// import { useNavigate } from "react-router-dom";
-
-// import cardColors from '@/data/card_colors';
 
 
 
-export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) {
+
+export default function Variants({ data, colorData, setData, abilityData, attributeData, typesData, categoryData, collectionData}) {
    
     return (
         <>
@@ -37,141 +35,24 @@ export default function Variants({ data, colorData, setData, abilityData, attrib
                     <title>Card Library</title>
                 </Head>
                 <NavBar/>
-                <Content data={data} colorData={colorData} setData={setData} abilityData={abilityData} attributeData={attributeData} typesData={typesData} categoryData={categoryData}/>
+                <Content data={data} colorData={colorData} setData={setData} abilityData={abilityData} attributeData={attributeData} typesData={typesData} categoryData={categoryData} collectionData={collectionData}/>
                 {/* <div className='static p-1'><ChangePage page={page}/></div> */}
             </AuthProvider>
         </>
     );
 }
 
-const Content = ({ data, colorData, setData, abilityData, attributeData, typesData, categoryData}) => {
+const Content = ({ data, colorData, setData, abilityData, attributeData, typesData, categoryData, collectionData}) => {
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [isPopOutOpen, setIsPopOutOpen] = useState(false);
     const router = useRouter(); // Initialize the router
     
+    const { collectionName } = router.query;
+
+    // Use collectionName as needed
+    console.log('collectionName:',collectionName);
     
-    const [colorFilter, setColorFilter] = useState('All');
-    const [setFilter, setSetFilter] = useState('All');
-    const [abilityFilter, setAbilityFilter] = useState('All');
-    const [attributeFilter, setAttributeFilter] = useState('All');
-    const [typesFilter, setTypesFilter] = useState('All');
-    const [categoryFilter, setCategoryFilter] = useState('All');
-    const [nameFilter, setNameFilter] = useState('');
-    const [numberFilter, setNumberFilter] = useState('');
-    const [costFilter, setCostFilter] = useState('');
-    const [counterFilter, setCounterFilter] = useState('');
-    const [powerFilter, setPowerFilter] = useState('');
-    const [effectFilter, setEffectFilter] = useState('');
-    const [triggerFilter, setTriggerFilter] = useState('');
-
     
-    const handleColorFilterChange = (e) => {
-      setColorFilter(e.target.value);
-    };
-    
-    const handleSetFilterChange = (e) => {
-      setSetFilter(e.target.value);
-    };
-
-    const handleAbilityFilterChange = (e) => {
-        setAbilityFilter(e.target.value);
-      };
-
-    const handleAttributeFilterChange = (e) => {
-    setAttributeFilter(e.target.value);
-    };
-    
-    const handleTypesFilterChange = (e) => {
-        setTypesFilter(e.target.value);
-    };
-
-    const handleCategoryFilterChange = (e) => {
-        setCategoryFilter(e.target.value);
-        console.log(e.target.value);
-    };
-
-    const handleNameFilterChange = (e) => {
-        setNameFilter(e.target.value.toLowerCase());
-    };
-    
-    const handleEffectFilterChange = (e) => {
-        setEffectFilter(e.target.value.toLowerCase());
-    };
-    
-    const handleTriggerFilterChange = (e) => {
-        setTriggerFilter(e.target.value.toLowerCase());
-    };
-
-    const handleNumberFilterChange = (e) => {
-        setNumberFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
-
-    const handleCostFilterChange = (e) => {
-        setCostFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
-
-    const handleCounterFilterChange = (e) => {
-        setCounterFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
-
-    const handlePowerFilterChange = (e) => {
-        setPowerFilter(e.target.value !== '' ? parseInt(e.target.value, 10) : '');
-    };
-
-    const handleFilter = () => {
-        // Construct the query parameters
-        const queryParams = new URLSearchParams({
-            page: '1', // Reset to page 1 or keep the current page
-            color: colorFilter,
-            set: setFilter,
-            ability: abilityFilter,
-            attribute: attributeFilter,
-            type: typesFilter,
-            category: categoryFilter,
-            name: nameFilter,
-            number: numberFilter,
-            cost: costFilter,
-            counter: counterFilter,
-            power: powerFilter,
-            effect: effectFilter,
-            trigger: triggerFilter
-        });
-
-        // Navigate to the same page with new query parameters
-        router.push({
-            pathname: router.pathname,
-            query: queryParams.toString(),
-        });
-    };
-    
-
-    // const filteredData = data.filter((variant) => {
-    //     const colorMatches = colorFilter === 'All' || variant.details[0].color.some((color) => color.name === colorFilter);
-    //     const setMatches = setFilter === 'All' || variant.details[0].set.some((set) => set.setNumber === setFilter);
-    //     const abilityMatches = abilityFilter === 'All' || variant.details[0].abilities.some((ability) => ability.name === abilityFilter);
-    //     const attributeMatches = attributeFilter === 'All' || variant.details[0].attribute.some((attribute) => attribute.name === attributeFilter);
-    //     const typesMatches = typesFilter === 'All' || variant.details[0].types.some((types) => types.name === typesFilter);
-    //     const categoryMatches = categoryFilter === 'All' || variant.details[0].category.some((category) => category.name === categoryFilter);
-    //     const nameMatches = nameFilter === '' || variant.details[0].name.toLowerCase().includes(nameFilter);
-    //     const effectMatches = effectFilter === '' || variant.details[0].effect.toLowerCase().includes(effectFilter);
-    //     const triggerMatches = triggerFilter === '' || variant.details[0].trigger.toLowerCase().includes(triggerFilter);
-    //     const numberMatches =
-    //         numberFilter === '' ||
-    //         (typeof numberFilter === 'number' && variant.details[0].number === numberFilter);
-    //     const costMatches =
-    //         costFilter === '' ||
-    //         (typeof costFilter === 'number' && variant.details[0].cost_life === costFilter);
-    //     const powerMatches =
-    //         powerFilter === '' ||
-    //         (typeof powerFilter === 'number' && variant.details[0].power === powerFilter);
-            
-    //     const counterMatches = counterFilter === '' || variant.details[0].counter === counterFilter;
-      
-    //     return colorMatches && setMatches && abilityMatches && attributeMatches && typesMatches && categoryMatches && nameMatches && numberMatches && costMatches && counterMatches && powerMatches && effectMatches && triggerMatches;
-        
-    //   });
-
-
     const handleImageClick = (variant) => {
         setSelectedVariant(variant);
         setIsPopOutOpen(!isPopOutOpen);
@@ -180,18 +61,6 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
     const handlePopOutClose = () => {
         setIsPopOutOpen(false);
     };
-      
-    // console.log(auth.currentUser)
-    
-    // if (loading) {
-    //     // Show loading spinner or placeholder while checking the auth state
-    //     return <div>Loading...</div>;
-    //   }
-    
-    //   if (!authUser) {
-    //     // User is not authenticated, show login/register UI
-    //     return <div>Please login or register.</div>;
-    //   }
     
     const {authUser} = useAuth();
 
@@ -200,7 +69,7 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
             <div className='flex py-20 relative'>
                 <div className='sm:flex-row md:flex-row lg:flex-col xl:flex-col'>
                     {/* <FilterMyStuff/> */}
-                    <div id='cardFilters' class='p-2 relative z-0 overflow-y-auto max-h-screen w-auto'>
+                    {/* <div id='cardFilters' class='p-2 relative z-0 overflow-y-auto max-h-screen w-auto'>
                         
                         <div class='w-auto'  id='filterArea' style={{display:'none'}} >
                         
@@ -349,7 +218,7 @@ const Content = ({ data, colorData, setData, abilityData, attributeData, typesDa
 
                             <button onClick={handleFilter}>Filter</button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className='place-content-center'>
@@ -440,7 +309,10 @@ export async function getServerSideProps(context) {
     powerFilter = isNaN(powerFilter) ? 0 : powerFilter
     effectFilter = effectFilter||''
     triggerFilter = triggerFilter||''
-    collectionName = collectionName||'All'
+    
+
+    
+    console.log('collectionName 2',collectionName)
 
     // Parse cookies from the incoming request
     const cookies = parse(context.req.headers.cookie || '');
@@ -494,6 +366,8 @@ export async function getServerSideProps(context) {
 
     const categoryResponse = await fetch(`${process.env.NEXT_API_URL}/categories`)
     const categoryData = await categoryResponse.json()
+    
+    
 
     // console.log("data",data)
     return {
@@ -506,9 +380,9 @@ export async function getServerSideProps(context) {
             typesData,
             categoryData,
             page,
-            collectionName,
             // pageSize,
             authUser: uid,
+            collectionName
         }
     }
 }
